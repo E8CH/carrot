@@ -1,19 +1,18 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import Link from 'next/link'
 import { PostCard } from '@/components/common/PostCard'
 import { postsApi } from '@/lib/api/posts'
 
-function useIsLoggedIn() {
-  if (typeof window === 'undefined') return false
-  return !!localStorage.getItem('token')
-}
-
 export default function Home() {
   const bottomRef = useRef<HTMLDivElement>(null)
-  const isLoggedIn = useIsLoggedIn()
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+
+  useEffect(() => {
+    setIsLoggedIn(!!localStorage.getItem('token'))
+  }, [])
 
   const {
     data,
