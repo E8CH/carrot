@@ -28,7 +28,7 @@ class ApiEndpoints {
   static String postBuyers(int id) => '/api/v1/posts/$id/buyers';
   static String postComplete(int id) => '/api/v1/posts/$id/complete';
 
-  static const chats = '/api/v1/chats';
+  static const chats = '/api/v1/chats/';
   static String chatMessages(String roomId) => '/api/v1/chats/$roomId/messages';
   static String chatRead(String roomId) => '/api/v1/chats/$roomId/read';
   static const chatsUnreadCount = '/api/v1/chats/unread-count';

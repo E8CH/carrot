@@ -23,8 +23,10 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
   int _unreadCount = 0;
   Timer? _unreadTimer;
 
-  final List<Widget> _pages = const [
-    FeedScreen(),
+  int _feedRefreshKey = 0;
+
+  List<Widget> get _pages => [
+    FeedScreen(key: ValueKey(_feedRefreshKey)),
     ChatListScreen(),
     MyScreen(),
   ];
@@ -63,7 +65,7 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
           ? FloatingActionButton(
               onPressed: () => Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => const PostFormScreen()),
-              ),
+              ).then((_) => setState(() => _feedRefreshKey++)),
               backgroundColor: AppColors.primary,
               child: const Icon(Icons.add, color: Colors.white),
             )

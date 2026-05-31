@@ -172,7 +172,7 @@ export default function ChatRoomPage() {
     : sellerEmail
 
   return (
-    <div className="min-h-screen bg-white flex flex-col max-w-lg mx-auto">
+    <div className="min-h-screen bg-white flex flex-col max-w-2xl mx-auto">
       <header className="sticky top-0 z-10 bg-white border-b px-4 py-3 flex items-center gap-3">
         <button onClick={() => router.back()} className="text-gray-600 text-lg">←</button>
         <div>

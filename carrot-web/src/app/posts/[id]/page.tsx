@@ -54,7 +54,7 @@ function ImageSlider({ photos }: { photos: string[] }) {
         {photos.map((url, i) => (
           <div
             key={i}
-            className="relative flex-shrink-0 h-full"
+            className="relative flex-shrink-0 h-full bg-gray-100"
             style={{ width: `${100 / photos.length}%` }}
           >
             <Image
@@ -62,8 +62,9 @@ function ImageSlider({ photos }: { photos: string[] }) {
               alt={`사진 ${i + 1}`}
               fill
               className="object-cover"
-              priority={i === 0}
-              sizes="(max-width: 512px) 100vw, 512px"
+              priority={i <= 1}
+              loading={i <= 1 ? 'eager' : 'lazy'}
+              sizes="(max-width: 672px) 100vw, 672px"
             />
           </div>
         ))}
@@ -213,7 +214,7 @@ export default function PostDetailPage() {
   const priceText = post.is_free ? '나눔' : post.price != null ? `${post.price.toLocaleString()}원` : '가격 미정'
 
   return (
-    <div className="min-h-screen bg-white max-w-lg mx-auto pb-24">
+    <div className="min-h-screen bg-white max-w-2xl mx-auto pb-24">
       {/* 삭제 확인 다이얼로그 */}
       {showDeleteDialog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
@@ -283,7 +284,7 @@ export default function PostDetailPage() {
       </div>
 
       {/* 하단 고정 버튼 */}
-      <div className="fixed bottom-0 left-0 right-0 max-w-lg mx-auto bg-white border-t px-4 py-3 flex flex-col gap-2">
+      <div className="fixed bottom-0 left-0 right-0 max-w-2xl mx-auto bg-white border-t px-4 py-3 flex flex-col gap-2">
         {chatError && <p className="text-xs text-red-500 text-center">{chatError}</p>}
         {statusError && <p className="text-xs text-red-500 text-center">{statusError}</p>}
         <div className="flex gap-2">

@@ -54,12 +54,18 @@ class ApiClient {
     if (res.statusCode >= 400) {
       try {
         final decoded = jsonDecode(utf8.decode(res.bodyBytes));
+        final raw = decoded['detail'];
+        final detail = raw is List
+            ? (raw.isNotEmpty ? raw.first['msg']?.toString() ?? raw.toString() : '알 수 없는 오류')
+            : raw?.toString() ?? '알 수 없는 오류가 발생했습니다.';
         throw ApiException(
           statusCode: res.statusCode,
-          code: decoded['code'] ?? 'UNKNOWN',
-          detail: decoded['detail'] ?? '알 수 없는 오류가 발생했습니다.',
+          code: decoded['code']?.toString() ?? 'UNKNOWN',
+          detail: detail,
         );
-      } on FormatException {
+      } on ApiException {
+        rethrow;
+      } catch (_) {
         throw ApiException(
           statusCode: res.statusCode,
           code: 'SERVER_ERROR',

@@ -71,7 +71,7 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
         myEmail: _myEmail ?? '',
         postId: room['post_id'] as int,
       ),
-    ));
+    )).then((_) => _loadRooms());
   }
 
   @override

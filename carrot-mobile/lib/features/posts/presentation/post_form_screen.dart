@@ -246,8 +246,10 @@ class _PostFormScreenState extends ConsumerState<PostFormScreen> {
         }
         // 'cancel' → 아무것도 하지 않음
       },
-      child: Scaffold(
-      appBar: AppBar(
+      child: Stack(
+        children: [
+          Scaffold(
+          appBar: AppBar(
         title: const Text('내 물건 팔기'),
         actions: [
           TextButton(
@@ -358,7 +360,23 @@ class _PostFormScreenState extends ConsumerState<PostFormScreen> {
           ],
         ),
       ),
-    ),  // Scaffold
+          ),  // Scaffold
+          if (_loading)
+            Container(
+              color: Colors.white.withValues(alpha: 0.8),
+              child: const Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircularProgressIndicator(),
+                    SizedBox(height: 12),
+                    Text('등록 중...', style: TextStyle(fontSize: 14, color: Colors.grey)),
+                  ],
+                ),
+              ),
+            ),
+        ],
+      ),  // Stack
     );  // PopScope
   }
 }

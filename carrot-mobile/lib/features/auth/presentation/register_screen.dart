@@ -68,8 +68,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       setState(() => _error = e.detail);
     } on FormatException catch (e) {
       setState(() => _error = e.message.isNotEmpty ? e.message : '서버 응답을 처리할 수 없습니다.');
-    } catch (_) {
-      setState(() => _error = '회원가입에 실패했습니다.');
+    } catch (e) {
+      setState(() => _error = e.toString());
     } finally {
       if (mounted) setState(() => _loading = false);
     }

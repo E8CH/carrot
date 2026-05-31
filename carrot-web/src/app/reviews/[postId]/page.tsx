@@ -72,7 +72,7 @@ export default function ReviewFormPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white max-w-lg mx-auto pb-24">
+    <div className="min-h-screen bg-white max-w-2xl mx-auto pb-24">
       <header className="sticky top-0 z-10 bg-white border-b px-4 py-3 flex items-center gap-3">
         <button onClick={() => router.back()} className="text-gray-600 text-lg">←</button>
         <span className="font-semibold flex-1">후기 작성</span>
@@ -149,7 +149,7 @@ export default function ReviewFormPage() {
         {error && <p className="text-sm text-red-500">{error}</p>}
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 max-w-lg mx-auto bg-white border-t px-4 py-3">
+      <div className="fixed bottom-0 left-0 right-0 max-w-2xl mx-auto bg-white border-t px-4 py-3">
         <Button
           className="w-full"
           style={{ backgroundColor: isPositive !== null ? '#FF7E36' : undefined }}

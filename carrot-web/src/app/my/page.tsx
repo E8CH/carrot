@@ -84,7 +84,7 @@ export default function MyPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 max-w-lg mx-auto">
+    <div className="min-h-screen bg-gray-50 max-w-2xl mx-auto">
       <SiteHeader />
       <div className="px-4 py-8">
 

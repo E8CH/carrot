@@ -42,9 +42,12 @@ export default function Home() {
     <div className="min-h-screen bg-gray-50">
       <SiteHeader />
 
-      <main className="max-w-lg mx-auto">
+      <main className="max-w-2xl mx-auto">
         {isLoading && (
-          <div className="p-8 text-center text-gray-400">불러오는 중...</div>
+          <div className="flex flex-col items-center justify-center py-20 gap-3">
+            <div className="w-8 h-8 border-4 border-orange-400 border-t-transparent rounded-full animate-spin" />
+            <p className="text-sm text-gray-400">불러오는 중...</p>
+          </div>
         )}
         {isError && (
           <div className="p-8 text-center text-red-400">게시글을 불러올 수 없습니다.</div>
