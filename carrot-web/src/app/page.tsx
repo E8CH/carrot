@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { PostCard } from '@/components/common/PostCard'
 import { postsApi } from '@/lib/api/posts'
