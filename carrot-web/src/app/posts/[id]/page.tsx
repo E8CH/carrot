@@ -215,7 +215,7 @@ export default function PostDetailPage() {
   const priceText = post.is_free ? '나눔' : post.price != null ? `${post.price.toLocaleString()}원` : '가격 미정'
 
   return (
-    <div className="min-h-screen bg-white max-w-2xl mx-auto pb-24">
+    <div className="min-h-screen bg-white">
       {/* 삭제 확인 다이얼로그 */}
       {showDeleteDialog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
@@ -224,70 +224,71 @@ export default function PostDetailPage() {
             <p className="text-sm text-gray-500 mb-5">삭제하면 복구할 수 없습니다.</p>
             {deleteError && <p className="text-sm text-red-500 mb-3">{deleteError}</p>}
             <div className="flex gap-2">
-              <button
-                onClick={() => setShowDeleteDialog(false)}
-                disabled={deleting}
-                className="flex-1 py-2.5 rounded-lg border text-sm text-gray-600 disabled:opacity-40"
-              >취소</button>
-              <button
-                onClick={handleDelete}
-                disabled={deleting}
-                className="flex-1 py-2.5 rounded-lg text-sm font-medium text-white bg-red-500 disabled:opacity-40"
-              >{deleting ? '삭제 중...' : '삭제'}</button>
+              <button onClick={() => setShowDeleteDialog(false)} disabled={deleting}
+                className="flex-1 py-2.5 rounded-lg border text-sm text-gray-600 disabled:opacity-40">취소</button>
+              <button onClick={handleDelete} disabled={deleting}
+                className="flex-1 py-2.5 rounded-lg text-sm font-medium text-white bg-red-500 disabled:opacity-40">
+                {deleting ? '삭제 중...' : '삭제'}
+              </button>
             </div>
           </div>
         </div>
       )}
 
       <SiteHeader />
-      {/* 뒤로가기 */}
-      <div className="px-4 py-2">
-        <button onClick={() => router.back()} className="text-gray-500 text-sm flex items-center gap-1 hover:text-gray-700">
-          ← 뒤로
-        </button>
-      </div>
 
-      {/* 이미지 슬라이더 */}
-      <ImageSlider photos={post.photos} />
-
-      {/* 판매자 프로필 */}
-      <div className="flex items-center gap-3 px-6 py-4 border-b">
-        <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-lg">👤</div>
-        <div>
-          <p className="text-sm font-medium text-gray-900">{post.seller_email}</p>
-          <MannerTempWidget temp={post.manner_temp} />
-        </div>
-      </div>
-
-      {/* 본문 */}
-      <div className="px-6 py-5 space-y-4">
-        {/* 제목 + 상태 배지 */}
-        <div className="flex items-center gap-2">
-          <h1 className="text-lg font-semibold text-gray-900 flex-1">{post.title}</h1>
-          <StatusBadge status={post.status} />
+      <div className="max-w-6xl mx-auto px-4 md:px-8">
+        <div className="py-3">
+          <button onClick={() => router.back()} className="text-gray-500 text-sm hover:text-gray-700">← 뒤로</button>
         </div>
 
-        {/* 가격 */}
-        <p className="text-xl font-bold text-gray-900">{priceText}</p>
+        {/* 데스크탑: 2컬럼 / 모바일: 1컬럼 */}
+        <div className="md:grid md:grid-cols-2 md:gap-10 pb-24 md:pb-12">
+          {/* 좌: 이미지 슬라이더 */}
+          <div>
+            <ImageSlider photos={post.photos} />
+          </div>
 
-        {/* 설명 */}
-        <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{post.description}</p>
+          {/* 우(데스크탑) / 하단(모바일): 상세 정보 */}
+          <div className="py-4 space-y-4">
+            {/* 판매자 프로필 */}
+            <div className="flex items-center gap-3 pb-4 border-b">
+              <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-lg">👤</div>
+              <div>
+                <p className="text-sm font-medium text-gray-900">{post.seller_email}</p>
+                <MannerTempWidget temp={post.manner_temp} />
+              </div>
+            </div>
 
-        {/* 거래 희망 장소 */}
-        {post.trade_place && (
-          <p className="text-sm text-gray-400">📍 {post.trade_place}</p>
-        )}
+            {/* 제목 + 상태 배지 */}
+            <div className="flex items-center gap-2">
+              <h1 className="text-xl font-semibold text-gray-900 flex-1">{post.title}</h1>
+              <StatusBadge status={post.status} />
+            </div>
 
-        {/* 통계 */}
-        <div className="flex gap-3 text-xs text-gray-400 pt-2 border-t">
-          <span>채팅 {post.chat_count}</span>
-          <span>관심 {post.like_count}</span>
-          <span>조회 {post.view_count}</span>
-        </div>
-      </div>
+            {/* 가격 */}
+            <p className="text-2xl font-bold text-gray-900">{priceText}</p>
 
-      {/* 하단 고정 버튼 */}
-      <div className="fixed bottom-0 left-0 right-0 max-w-2xl mx-auto bg-white border-t px-4 py-3 flex flex-col gap-2">
+            {/* 설명 */}
+            <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{post.description}</p>
+
+            {/* 거래 희망 장소 */}
+            {post.trade_place && (
+              <p className="text-sm text-gray-400">📍 {post.trade_place}</p>
+            )}
+
+            {/* 통계 */}
+            <div className="flex gap-3 text-xs text-gray-400 pt-2 border-t">
+              <span>채팅 {post.chat_count}</span>
+              <span>관심 {post.like_count}</span>
+              <span>조회 {post.view_count}</span>
+            </div>
+
+            {/* 데스크탑 전용 액션 버튼 */}
+            <div className="hidden md:flex flex-col gap-2 pt-2">
+              {chatError && <p className="text-xs text-red-500">{chatError}</p>}
+              {statusError && <p className="text-xs text-red-500">{statusError}</p>}
+              <div className="flex gap-2">
         {chatError && <p className="text-xs text-red-500 text-center">{chatError}</p>}
         {statusError && <p className="text-xs text-red-500 text-center">{statusError}</p>}
         <div className="flex gap-2">
@@ -348,8 +349,49 @@ export default function PostDetailPage() {
             </Button>
           </>
         )}
+            </div>
+            </div>{/* desktop buttons end */}
+          </div>{/* right col end */}
+        </div>{/* grid end */}
+      </div>{/* max-w-6xl end */}
+
+      {/* 모바일 전용 하단 고정 버튼 */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t px-4 py-3 flex flex-col gap-2">
+        {chatError && <p className="text-xs text-red-500 text-center">{chatError}</p>}
+        {statusError && <p className="text-xs text-red-500 text-center">{statusError}</p>}
+        <div className="flex gap-2">
+          {isOwner ? (
+            <>
+              {post.status !== '거래완료' && (
+                <>
+                  <Button variant="outline" className="shrink-0 text-sm px-3 text-orange-600 border-orange-400"
+                    onClick={() => setShowTradeSheet(true)}>거래완료</Button>
+                  <Button variant="outline" className="shrink-0 text-sm px-3"
+                    onClick={() => handleStatusChange(post.status === '판매중' ? '예약중' : '판매중')}
+                    disabled={statusLoading}>
+                    {post.status === '판매중' ? '예약중' : '판매중'}
+                  </Button>
+                </>
+              )}
+              <Button variant="outline" className="flex-1"
+                onClick={() => router.push(`/posts/${post.id}/edit`)}>수정</Button>
+              <Button variant="outline" className="flex-1 text-red-500 border-red-300"
+                onClick={() => setShowDeleteDialog(true)}>삭제</Button>
+            </>
+          ) : (
+            <>
+              <Button variant="outline" className="w-14 h-12 shrink-0 text-lg" onClick={handleLike}>
+                {isLiked ? '❤️' : '🤍'}<span className="text-xs ml-0.5">{likeCount}</span>
+              </Button>
+              <Button className="flex-1" style={{ backgroundColor: chatLoading ? '#FFB899' : '#FF7E36' }}
+                onClick={handleChat} disabled={chatLoading}>
+                {chatLoading ? '연결 중...' : '채팅하기'}
+              </Button>
+            </>
+          )}
         </div>
       </div>
+
       <TradeCompleteSheet
         postId={postId}
         isOpen={showTradeSheet}
