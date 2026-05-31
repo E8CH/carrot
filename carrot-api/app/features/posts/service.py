@@ -277,6 +277,7 @@ async def get_post_detail(
         )
     post, like_count, chat_count, manner_temp = result
     await repository.increment_view_count(db, post_id)
+    await db.refresh(post)
     is_liked = False
     if user_email:
         is_liked = await repository.is_liked_by(db, user_email, post_id)
