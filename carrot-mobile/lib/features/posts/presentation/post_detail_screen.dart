@@ -441,6 +441,22 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
           itemBuilder: (ctx, i) => Image.network(
             photos[i],
             fit: BoxFit.cover,
+            loadingBuilder: (ctx, child, loadingProgress) {
+              if (loadingProgress == null) return child;
+              return Container(
+                color: Colors.grey.shade200,
+                child: Center(
+                  child: CircularProgressIndicator(
+                    value: loadingProgress.expectedTotalBytes != null
+                        ? loadingProgress.cumulativeBytesLoaded /
+                            loadingProgress.expectedTotalBytes!
+                        : null,
+                    strokeWidth: 2,
+                    valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFFF7E36)),
+                  ),
+                ),
+              );
+            },
             errorBuilder: (ctx, err, st) => Container(
               color: Colors.grey.shade100,
               child: const Icon(Icons.broken_image_outlined, color: Colors.grey),
