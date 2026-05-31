@@ -17,15 +17,10 @@ import { Button } from '@/components/ui/button'
 function ImageSlider({ photos }: { photos: string[] }) {
   const [idx, setIdx] = useState(0)
   const startX = useRef(0)
+  const isDragging = useRef(false)
 
   const prev = () => setIdx((i) => Math.max(0, i - 1))
   const next = () => setIdx((i) => Math.min(photos.length - 1, i + 1))
-
-  const handleSwipeEnd = (endX: number) => {
-    const diff = endX - startX.current
-    if (diff > 50) prev()
-    else if (diff < -50) next()
-  }
 
   if (photos.length === 0) {
     return (
@@ -38,10 +33,19 @@ function ImageSlider({ photos }: { photos: string[] }) {
   return (
     <div
       className="relative w-full h-60 overflow-hidden bg-gray-100 select-none"
-      onMouseDown={(e) => { startX.current = e.clientX }}
-      onMouseUp={(e) => handleSwipeEnd(e.clientX)}
-      onTouchStart={(e) => { startX.current = e.touches[0].clientX }}
-      onTouchEnd={(e) => handleSwipeEnd(e.changedTouches[0].clientX)}
+      onPointerDown={(e) => {
+        startX.current = e.clientX
+        isDragging.current = true
+        e.currentTarget.setPointerCapture(e.pointerId)
+      }}
+      onPointerUp={(e) => {
+        if (!isDragging.current) return
+        isDragging.current = false
+        const diff = e.clientX - startX.current
+        if (diff > 50) prev()
+        else if (diff < -50) next()
+      }}
+      onPointerCancel={() => { isDragging.current = false }}
     >
       <div
         className="flex h-full transition-transform duration-300 ease-out"
