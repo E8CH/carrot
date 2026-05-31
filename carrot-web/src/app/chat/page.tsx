@@ -102,7 +102,7 @@ export default function ChatListPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white max-w-2xl mx-auto">
+    <div className="min-h-screen bg-white max-w-4xl mx-auto">
       <SiteHeader />
 
       {isLoading && (
