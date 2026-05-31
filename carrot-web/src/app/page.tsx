@@ -49,6 +49,7 @@ export default function Home() {
         <span className="text-xl font-bold" style={{ color: '#FF7E36' }}>🥕 carrot</span>
         <div className="flex items-center gap-3">
           <Link href="/posts/new" className="text-sm font-medium" style={{ color: '#FF7E36' }}>글쓰기</Link>
+          <Link href="/chat" className="text-sm text-gray-500 hover:text-gray-700">채팅</Link>
           <Link href="/my" className="text-sm text-gray-500 hover:text-gray-700">나의당근</Link>
           {!isLoggedIn && (
             <Link href="/auth/login" className="text-sm text-gray-500 hover:text-gray-700">로그인</Link>
