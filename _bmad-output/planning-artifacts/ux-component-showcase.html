@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>carrot — 커스텀 컴포넌트 쇼케이스</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #111827; color: #fff; }
+
+  .page-header { padding: 40px 32px 24px; text-align: center; border-bottom: 1px solid #1F2937; }
+  .page-header h1 { font-size: 26px; font-weight: 700; color: #FF7E36; }
+  .page-header p { font-size: 14px; color: #6B7280; margin-top: 8px; }
+
+  .section { max-width: 1200px; margin: 0 auto; padding: 40px 32px; border-bottom: 1px solid #1F2937; }
+  .section-header { margin-bottom: 24px; }
+  .section-header h2 { font-size: 20px; font-weight: 700; color: #F9FAFB; }
+  .section-header .component-tag { display: inline-block; font-size: 12px; background: #1F2937; color: #FF7E36; border: 1px solid #374151; padding: 2px 10px; border-radius: 20px; margin-left: 10px; font-family: monospace; }
+  .section-header p { font-size: 13px; color: #6B7280; margin-top: 6px; }
+
+  .variants-row { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; }
+  .variant-block { background: #1F2937; border-radius: 12px; padding: 16px; min-width: 200px; }
+  .variant-label { font-size: 11px; color: #6B7280; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* ─── Design Tokens ─── */
+  :root {
+    --primary: #FF7E36;
+    --primary-hover: #E86D28;
+    --gray-50: #F9FAFB;
+    --gray-100: #F3F4F6;
+    --gray-200: #E5E7EB;
+    --gray-400: #9CA3AF;
+    --gray-600: #4B5563;
+    --gray-700: #374151;
+    --gray-900: #111827;
+    --success: #10B981;
+    --error: #EF4444;
+    --radius: 12px;
+  }
+
+  /* ══════════════════════════════════════
+     1. PostCard
+  ══════════════════════════════════════ */
+  .post-card {
+    display: flex; gap: 12px; padding: 14px 16px;
+    background: #fff; border-radius: 0;
+    border-bottom: 1px solid var(--gray-100);
+    width: 320px;
+  }
+  .post-card.reserved { opacity: 0.75; }
+  .post-card.done { opacity: 0.55; }
+  .post-card .thumb {
+    width: 100px; height: 100px; border-radius: 8px;
+    flex-shrink: 0; position: relative; overflow: hidden;
+  }
+  .post-card .thumb .status-overlay {
+    position: absolute; top: 6px; left: 6px;
+    font-size: 11px; font-weight: 600; padding: 2px 7px;
+    border-radius: 4px; color: #fff;
+  }
+  .post-card .info { flex: 1; min-width: 0; }
+  .post-card .info .title {
+    font-size: 14px; font-weight: 500; color: var(--gray-900);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .post-card .info .location {
+    font-size: 12px; color: var(--gray-400); margin-top: 3px;
+  }
+  .post-card .info .price {
+    font-size: 14px; font-weight: 700; color: var(--gray-900); margin-top: 6px;
+  }
+  .post-card .info .price.free { color: var(--success); }
+  .post-card .info .stats {
+    display: flex; gap: 8px; font-size: 11px; color: var(--gray-400); margin-top: 6px;
+  }
+  .bg-orange { background: linear-gradient(135deg,#FED7AA,#FB923C); }
+  .bg-blue   { background: linear-gradient(135deg,#BFDBFE,#60A5FA); }
+  .bg-green  { background: linear-gradient(135deg,#BBF7D0,#34D399); }
+  .bg-yellow { background: linear-gradient(135deg,#FDE68A,#FBBF24); }
+
+  /* ══════════════════════════════════════
+     2. StatusBadge
+  ══════════════════════════════════════ */
+  .status-badge {
+    display: inline-flex; align-items: center;
+    font-size: 12px; font-weight: 600; padding: 4px 10px;
+    border-radius: 6px; white-space: nowrap;
+  }
+  .status-badge.selling { background: var(--gray-100); color: var(--gray-600); }
+  .status-badge.reserved { background: #6B7280; color: #fff; }
+  .status-badge.done     { background: var(--gray-700); color: #fff; }
+
+  /* ══════════════════════════════════════
+     3. MannerTempWidget
+  ══════════════════════════════════════ */
+  .manner-temp {
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+  .manner-temp .icon { font-size: 18px; }
+  .manner-temp .temp-value { font-size: 15px; font-weight: 700; }
+  .manner-temp.cold  .temp-value { color: #3B82F6; }
+  .manner-temp.cool  .temp-value { color: #9CA3AF; }
+  .manner-temp.warm  .temp-value { color: #FF7E36; }
+  .manner-temp.hot   .temp-value { color: #EF4444; }
+  .manner-temp .temp-label { font-size: 11px; color: #9CA3AF; }
+  .manner-temp-large {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    padding: 16px 24px; background: #fff; border-radius: var(--radius);
+    min-width: 100px;
+  }
+  .manner-temp-large .icon { font-size: 32px; }
+  .manner-temp-large .temp-value { font-size: 28px; font-weight: 800; }
+  .manner-temp-large .temp-label { font-size: 12px; color: var(--gray-400); }
+
+  /* ══════════════════════════════════════
+     4. ChatListTile
+  ══════════════════════════════════════ */
+  .chat-list-tile {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 16px; background: #fff; width: 340px;
+    border-bottom: 1px solid var(--gray-100);
+    cursor: pointer;
+  }
+  .chat-list-tile:hover { background: var(--gray-50); }
+  .chat-list-tile .thumb {
+    width: 48px; height: 48px; border-radius: 8px; flex-shrink: 0;
+  }
+  .chat-list-tile .content { flex: 1; min-width: 0; }
+  .chat-list-tile .name { font-size: 14px; font-weight: 500; color: var(--gray-900); }
+  .chat-list-tile .name.unread { font-weight: 700; }
+  .chat-list-tile .last-msg {
+    font-size: 13px; color: var(--gray-400); margin-top: 2px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    max-width: 180px;
+  }
+  .chat-list-tile .last-msg.unread { color: var(--gray-600); font-weight: 500; }
+  .chat-list-tile .right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+  .chat-list-tile .time { font-size: 11px; color: var(--gray-400); }
+  .chat-list-tile .unread-count {
+    background: var(--primary); color: #fff;
+    font-size: 11px; font-weight: 700;
+    min-width: 20px; height: 20px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center; padding: 0 5px;
+  }
+
+  /* ══════════════════════════════════════
+     5. ChatBubble
+  ══════════════════════════════════════ */
+  .chat-room {
+    background: #F9FAFB; border-radius: var(--radius);
+    padding: 16px 12px; width: 300px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .chat-room .room-header {
+    font-size: 12px; color: var(--gray-400); text-align: center; margin-bottom: 4px;
+  }
+  .bubble-row { display: flex; align-items: flex-end; gap: 6px; }
+  .bubble-row.mine { justify-content: flex-end; }
+  .bubble-row.theirs { justify-content: flex-start; }
+  .bubble {
+    max-width: 200px; padding: 9px 13px; border-radius: 18px;
+    font-size: 14px; line-height: 1.5; position: relative;
+  }
+  .bubble.mine {
+    background: var(--primary); color: #fff;
+    border-bottom-right-radius: 4px;
+  }
+  .bubble.mine.sending { opacity: 0.6; }
+  .bubble.mine.failed { background: var(--error); }
+  .bubble.theirs {
+    background: #fff; color: var(--gray-900);
+    border: 1px solid var(--gray-200);
+    border-bottom-left-radius: 4px;
+  }
+  .bubble-meta { font-size: 10px; color: var(--gray-400); margin-bottom: 2px; }
+  .bubble-meta.mine { text-align: right; }
+  .sending-icon { font-size: 10px; margin-left: 4px; opacity: 0.8; }
+  .retry-btn {
+    font-size: 11px; color: var(--error); background: none; border: none;
+    cursor: pointer; text-decoration: underline; margin-left: 4px;
+  }
+
+  /* ══════════════════════════════════════
+     6. ImageSlider
+  ══════════════════════════════════════ */
+  .image-slider {
+    width: 300px; border-radius: var(--radius); overflow: hidden;
+    background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  .image-slider .slide {
+    width: 100%; height: 220px; position: relative;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .image-slider .counter {
+    position: absolute; top: 12px; right: 12px;
+    background: rgba(0,0,0,0.55); color: #fff;
+    font-size: 12px; padding: 3px 9px; border-radius: 12px;
+  }
+  .image-slider .dots {
+    display: flex; justify-content: center; gap: 5px;
+    padding: 10px 0 12px;
+  }
+  .image-slider .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--gray-200);
+    transition: background 0.2s;
+  }
+  .image-slider .dot.active { background: var(--primary); width: 18px; border-radius: 3px; }
+  .image-slider .skeleton-line {
+    height: 100%; background: linear-gradient(90deg, #E5E7EB 25%, #F3F4F6 50%, #E5E7EB 75%);
+    background-size: 200% 100%; animation: shimmer 1.5s infinite;
+  }
+  @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+  /* ══════════════════════════════════════
+     7. TradeCompleteSheet
+  ══════════════════════════════════════ */
+  .sheet-container {
+    width: 320px; background: #fff; border-radius: 20px 20px 0 0;
+    box-shadow: 0 -4px 24px rgba(0,0,0,0.15); overflow: hidden;
+  }
+  .sheet-handle {
+    width: 36px; height: 4px; background: var(--gray-200);
+    border-radius: 2px; margin: 12px auto 0;
+  }
+  .sheet-title {
+    font-size: 16px; font-weight: 700; color: var(--gray-900);
+    padding: 16px 20px 8px;
+  }
+  .sheet-subtitle { font-size: 13px; color: var(--gray-400); padding: 0 20px 16px; }
+  .buyer-option {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 20px; cursor: pointer; transition: background 0.15s;
+  }
+  .buyer-option:hover { background: var(--gray-50); }
+  .buyer-option.selected { background: #FFF0E6; }
+  .buyer-avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .buyer-option .buyer-name { font-size: 14px; font-weight: 500; color: var(--gray-900); }
+  .buyer-option .buyer-sub { font-size: 12px; color: var(--gray-400); }
+  .buyer-option .check-icon { margin-left: auto; color: var(--primary); font-size: 18px; }
+  .sheet-btn {
+    margin: 12px 20px 20px; width: calc(100% - 40px);
+    background: var(--primary); color: #fff; border: none;
+    padding: 14px; border-radius: 10px; font-size: 15px; font-weight: 700;
+    cursor: pointer; display: block;
+  }
+  .sheet-btn:hover { background: var(--primary-hover); }
+  .sheet-btn.disabled { background: var(--gray-200); color: var(--gray-400); cursor: default; }
+  .complete-state {
+    padding: 32px 20px; text-align: center;
+  }
+  .complete-state .check-anim {
+    width: 64px; height: 64px; background: #ECFDF5; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px; margin: 0 auto 16px;
+  }
+  .complete-state .complete-title { font-size: 18px; font-weight: 700; color: var(--gray-900); }
+  .complete-state .complete-sub { font-size: 14px; color: var(--gray-400); margin-top: 6px; }
+  .review-cta {
+    margin: 16px 20px 20px; width: calc(100% - 40px);
+    background: var(--primary); color: #fff; border: none;
+    padding: 14px; border-radius: 10px; font-size: 15px; font-weight: 700;
+    cursor: pointer; display: block; text-align: center;
+  }
+
+  /* ══════════════════════════════════════
+     8. UnreadBadge
+  ══════════════════════════════════════ */
+  .tab-bar-demo {
+    width: 300px; background: #fff; border-top: 1px solid var(--gray-100);
+    display: flex; padding: 8px 0 4px;
+    border-radius: 0 0 var(--radius) var(--radius);
+  }
+  .tab-item {
+    flex: 1; text-align: center; font-size: 10px;
+    color: var(--gray-400); padding: 4px 0; position: relative;
+  }
+  .tab-item.active { color: var(--primary); }
+  .tab-item .tab-icon { font-size: 22px; display: block; margin-bottom: 2px; }
+  .unread-badge {
+    position: absolute; top: 0; right: calc(50% - 20px);
+    background: var(--primary); color: #fff;
+    font-size: 10px; font-weight: 700;
+    min-width: 18px; height: 18px; border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 4px; border: 2px solid #fff;
+  }
+  .component-map {
+    width: 100%; background: #1F2937; border-radius: var(--radius);
+    padding: 24px; margin-top: 8px;
+  }
+  .component-map svg { width: 100%; height: auto; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>🥕 carrot — 커스텀 컴포넌트 쇼케이스</h1>
+  <p>8개 커스텀 컴포넌트 · 상태별 렌더링 · Classic 디자인 방향 기준</p>
+</div>
+
+<!-- ══ 1. PostCard ══ -->
+<div class="section">
+  <div class="section-header">
+    <h2>① PostCard <span class="component-tag">PostCard</span></h2>
+    <p>홈 피드·판매관리·구매내역·관심목록에서 게시글 1개 표현. 상태에 따라 썸네일 오버레이와 불투명도 변화.</p>
+  </div>
+  <div class="variants-row">
+    <div class="variant-block">
+      <div class="variant-label">판매중 (default)</div>
+      <div class="post-card" style="border-radius:12px;border:1px solid #F3F4F6">
+        <div class="thumb bg-orange"></div>
+        <div class="info">
+          <div class="title">아이패드 프로 11인치 2세대</div>
+          <div class="location">서울 · 3분 전</div>
+          <div class="price">680,000원</div>
+          <div class="stats"><span>💬 2</span><span>🤍 5</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="variant-block">
+      <div class="variant-label">예약중 (reserved)</div>
+      <div class="post-card reserved" style="border-radius:12px;border:1px solid #F3F4F6">
+        <div class="thumb bg-blue">
+          <div class="status-overlay" style="background:#6B7280">예약중</div>
+        </div>
+        <div class="info">
+          <div class="title">나이키 에어맥스 270</div>
+          <div class="location">서울 · 15분 전</div>
+          <div class="price">45,000원</div>
+          <div class="stats"><span>💬 1</span><span>🤍 8</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="variant-block">
+      <div class="variant-label">거래완료 (done)</div>
+      <div class="post-card done" style="border-radius:12px;border:1px solid #F3F4F6">
+        <div class="thumb bg-yellow">
+          <div class="status-overlay" style="background:#374151">거래완료</div>
+        </div>
+        <div class="info">
+          <div class="title">소니 WH-1000XM5</div>
+          <div class="location">서울 · 2시간 전</div>
+          <div class="price">180,000원</div>
+          <div class="stats"><span>💬 0</span><span>🤍 3</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="variant-block">
+      <div class="variant-label">나눔 (free)</div>
+      <div class="post-card" style="border-radius:12px;border:1px solid #F3F4F6">
+        <div class="thumb bg-green"></div>
+        <div class="info">
+          <div class="title">다이슨 에어랩 컴플리트</div>
+          <div class="location">서울 · 1시간 전</div>
+          <div class="price free">나눔</div>
+          <div class="stats"><span>💬 3</span><span>🤍 12</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 2. StatusBadge ══ -->
+<div class="section">
+  <div class="section-header">
+    <h2>② StatusBadge <span class="component-tag">StatusBadge</span></h2>
+    <p>게시글 상태를 색상+텍스트로 표현. PostCard 썸네일 오버레이 및 게시글 상세 제목 옆에 사용.</p>
+  </div>
+  <div class="variants-row">
+    <div class="variant-block">
+      <div class="variant-label">판매중</div>
+      <span class="status-badge selling">판매중</span>
+    </div>
+    <div class="variant-block">
+      <div class="variant-label">예약중</div>
+      <span class="status-badge reserved">예약중</span>
+    </div>
+    <div class="variant-block">
+      <div class="variant-label">거래완료</div>
+      <span class="status-badge done">거래완료</span>
+    </div>
+    <div class="variant-block" style="background:#fff">
+      <div class="variant-label" style="color:#9CA3AF">게시글 상세 제목 옆 사용 예</div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:15px;font-weight:600;color:#111827">아이패드 프로 11인치</span>
+        <span class="status-badge reserved">예약중</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 3. MannerTempWidget ══ -->
+<div class="section">
+  <div class="section-header">
+    <h2>③ MannerTempWidget <span class="component-tag">MannerTempWidget</span></h2>
+    <p>온도 범위에 따라 색상이 바뀌는 신뢰도 위젯. inline(게시글 상세)과 large(마이페이지) 두 가지 variant.</p>
+  </div>
+  <div class="variants-row">
+    <div class="variant-block">
+      <div class="variant-label">inline — 온도별 색상</div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="manner-temp cold"><span class="icon">🥕</span><span class="temp-value">21.0℃</span><span class="temp-label">낮음</span></div>
+        <div class="manner-temp cool"><span class="icon">🥕</span><span class="temp-value">34.0℃</span><span class="temp-label">보통</span></div>
+        <div class="manner-temp warm"><span class="icon">🥕</span><span class="temp-value">36.5℃</span><span class="temp-label">기본</span></div>
+        <div class="manner-temp warm"><span class="icon">🥕</span><span class="temp-value">42.3℃</span><span class="temp-label">좋음</span></div>
+        <div class="manner-temp hot"><span class="icon">🥕</span><span class="temp-value">67.5℃</span><span class="temp-label">매우 높음</span></div>
+      </div>
+    </div>
+    <div class="variant-block">
+      <div class="variant-label">large — 마이페이지 프로필</div>
+      <div class="manner-temp-large">
+        <span class="icon">🥕</span>
+        <span class="temp-value" style="color:#FF7E36">42.3℃</span>
+        <span class="temp-label">매너온도</span>
+      </div>
+    </div>
+    <div class="variant-block" style="background:#fff">
+      <div class="variant-label" style="color:#9CA3AF">게시글 상세 판매자 프로필 옆</div>
+      <div style="display:flex;align-items:center;gap:10px;padding:8px">
+        <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#FED7AA,#FB923C)"></div>
+        <div>
+          <div style="font-size:14px;font-weight:600;color:#111827">김당근</div>
+          <div class="manner-temp warm" style="margin-top:3px"><span style="font-size:14px">🥕</span><span class="temp-value" style="font-size:13px">42.3℃</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 4. ChatListTile ══ -->
+<div class="section">
+  <div class="section-header">
+    <h2>④ ChatListTile <span class="component-tag">ChatListTile</span></h2>
+    <p>채팅 목록 각 항목. 읽음/미읽음 상태에 따라 텍스트 굵기와 배지 노출이 달라짐.</p>
+  </div>
+  <div class="variants-row">
+    <div class="variant-block" style="padding:0;overflow:hidden;width:340px">
+      <div class="variant-label" style="padding:12px 16px 4px">read (읽음)</div>
+      <div class="chat-list-tile">
+        <div class="thumb bg-orange" style="border-radius:8px"></div>
+        <div class="content">
+          <div class="name">김당근</div>
+          <div class="last-msg">네, 내일 오후 2시에 만나요!</div>
+        </div>
+        <div class="right">
+          <div class="time">5분 전</div>
+        </div>
+      </div>
+      <div class="variant-label" style="padding:12px 16px 4px">unread (미읽음)</div>
+      <div class="chat-list-tile">
+        <div class="thumb bg-blue" style="border-radius:8px"></div>
+        <div class="content">
+          <div class="name unread">이번개</div>
+          <div class="last-msg unread">혹시 가격 조정 가능하신가요?</div>
+        </div>
+        <div class="right">
+          <div class="time">방금 전</div>
+          <div class="unread-count">3</div>
+        </div>
+      </div>
+      <div class="chat-list-tile">
+        <div class="thumb bg-green" style="border-radius:8px"></div>
+        <div class="content">
+          <div class="name unread">박나눔</div>
+          <div class="last-msg unread">안녕하세요, 아직 판매중인가요?</div>
+        </div>
+        <div class="right">
+          <div class="time">1시간 전</div>
+          <div class="unread-count">1</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 5. ChatBubble ══ -->
+<div class="section">
+  <div class="section-header">
+    <h2>⑤ ChatBubble <span class="component-tag">ChatBubble</span></h2>
+    <p>1:1 채팅 말풍선. mine(내 메시지)은 오렌지 오른쪽, theirs(상대)는 회색 왼쪽. 전송 중·실패 상태 포함.</p>
+  </div>
+  <div class="variants-row">
+    <div class="variant-block">
+      <div class="variant-label">일반 대화</div>
+      <div class="chat-room">
+        <div class="room-header">오늘</div>
+        <div class="bubble-row theirs">
+          <div>
+            <div class="bubble-meta">이번개</div>
+            <div class="bubble theirs">안녕하세요! 아직 판매중인가요?</div>
+          </div>
+        </div>
+        <div class="bubble-row mine">
+          <div>
+            <div class="bubble-meta mine">나</div>
+            <div class="bubble mine">네, 판매중입니다!</div>
+          </div>
+        </div>
+        <div class="bubble-row theirs">
+          <div>
+            <div class="bubble theirs">가격 조정 가능한가요? 40,000원에 어떨까요?</div>
+          </div>
+        </div>
+        <div class="bubble-row mine">
+          <div>
+            <div class="bubble mine">42,000원까지는 가능합니다 🙂</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="variant-block">
+      <div class="variant-label">전송 상태 variants</div>
+      <div class="chat-room">
+        <div class="bubble-row mine">
+          <div>
+            <div class="bubble-meta mine">전송 완료</div>
+            <div class="bubble mine">네, 가능합니다!</div>
+          </div>
+        </div>
+        <div class="bubble-row mine">
+          <div>
+            <div class="bubble-meta mine">전송 중 (낙관적 UI)</div>
+            <div class="bubble mine sending">내일 오후에 봬요 <span class="sending-icon">⏳</span></div>
+          </div>
+        </div>
+        <div class="bubble-row mine">
+          <div>
+            <div class="bubble-meta mine">전송 실패</div>
+            <div style="display:flex;align-items:center;gap:6px">
+              <button class="retry-btn">재전송</button>
+              <div class="bubble mine failed">메시지가 전송되지 않았습니다</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 6. ImageSlider ══ -->
+<div class="section">
+  <div class="section-header">
+    <h2>⑥ ImageSlider <span class="component-tag">ImageSlider</span></h2>
+    <p>게시글 상세 상단 전체 너비 이미지 슬라이더. 현재 인덱스 표시(우상단 카운터)와 하단 인디케이터 점.</p>
+  </div>
+  <div class="variants-row">
+    <div class="variant-block">
+      <div class="variant-label">로드 완료 — 3번째 사진</div>
+      <div class="image-slider">
+        <div class="slide bg-blue">
+          <div class="counter">3 / 5</div>
+        </div>
+        <div class="dots">
+          <div class="dot"></div><div class="dot"></div>
+          <div class="dot active"></div>
+          <div class="dot"></div><div class="dot"></div>
+        </div>
+      </div>
+    </div>
+    <div class="variant-block">
+      <div class="variant-label">로딩 중 (skeleton)</div>
+      <div class="image-slider">
+        <div class="slide">
+          <div class="skeleton-line" style="width:100%;height:100%"></div>
+        </div>
+        <div class="dots">
+          <div class="dot active"></div>
+          <div class="dot"></div><div class="dot"></div>
+        </div>
+      </div>
+    </div>
+    <div class="variant-block">
+      <div class="variant-label">단일 이미지 (인디케이터 없음)</div>
+      <div class="image-slider">
+        <div class="slide bg-orange">
+          <div class="counter">1 / 1</div>
+        </div>
+        <div class="dots">
+          <div class="dot active"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 7. TradeCompleteSheet ══ -->
+<div class="section">
+  <div class="section-header">
+    <h2>⑦ TradeCompleteSheet <span class="component-tag">TradeCompleteSheet</span></h2>
+    <p>거래완료 플로우를 단일 바텀시트에서 3단계로 완결. Step1 구매자 선택 → Step2 완료 애니메이션 → Step3 후기 CTA.</p>
+  </div>
+  <div class="variants-row">
+    <div class="variant-block">
+      <div class="variant-label">Step 1 — 구매자 선택</div>
+      <div class="sheet-container">
+        <div class="sheet-handle"></div>
+        <div class="sheet-title">거래완료로 변경할까요?</div>
+        <div class="sheet-subtitle">채팅한 구매자 중 누구와 거래했나요?</div>
+        <div class="buyer-option selected">
+          <div class="buyer-avatar" style="background:#FFF0E6">👤</div>
+          <div>
+            <div class="buyer-name">이번개</div>
+            <div class="buyer-sub">마지막 메시지 · 5분 전</div>
+          </div>
+          <span class="check-icon">✓</span>
+        </div>
+        <div class="buyer-option">
+          <div class="buyer-avatar" style="background:#EFF6FF">👤</div>
+          <div>
+            <div class="buyer-name">박나눔</div>
+            <div class="buyer-sub">마지막 메시지 · 1시간 전</div>
+          </div>
+        </div>
+        <button class="sheet-btn">거래완료로 변경</button>
+      </div>
+    </div>
+    <div class="variant-block">
+      <div class="variant-label">Step 2 — 완료 (체크 애니메이션)</div>
+      <div class="sheet-container">
+        <div class="sheet-handle"></div>
+        <div class="complete-state">
+          <div class="check-anim">✅</div>
+          <div class="complete-title">거래완료!</div>
+          <div class="complete-sub">이번개님과의 거래가<br>완료되었습니다.</div>
+        </div>
+      </div>
+    </div>
+    <div class="variant-block">
+      <div class="variant-label">Step 3 — 후기 작성 CTA</div>
+      <div class="sheet-container">
+        <div class="sheet-handle"></div>
+        <div class="complete-state">
+          <div class="check-anim">🥕</div>
+          <div class="complete-title">후기를 남겨주세요</div>
+          <div class="complete-sub">이번개님은 어떠셨나요?<br>매너온도에 반영됩니다.</div>
+        </div>
+        <button class="review-cta">후기 작성하기</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 8. UnreadBadge ══ -->
+<div class="section">
+  <div class="section-header">
+    <h2>⑧ UnreadBadge <span class="component-tag">UnreadBadge</span></h2>
+    <p>하단 채팅 탭 아이콘 위에 미읽음 채팅방 수 표시. 0개면 숨김, 99+는 "99+"로 표시.</p>
+  </div>
+  <div class="variants-row">
+    <div class="variant-block">
+      <div class="variant-label">미읽음 없음 (hidden)</div>
+      <div class="tab-bar-demo">
+        <div class="tab-item active"><span class="tab-icon">🏠</span>홈</div>
+        <div class="tab-item"><span class="tab-icon">💬</span>채팅</div>
+        <div class="tab-item"><span class="tab-icon">🥕</span>나의당근</div>
+      </div>
+    </div>
+    <div class="variant-block">
+      <div class="variant-label">미읽음 3개 (+3)</div>
+      <div class="tab-bar-demo">
+        <div class="tab-item active"><span class="tab-icon">🏠</span>홈</div>
+        <div class="tab-item">
+          <span class="tab-icon">💬</span>채팅
+          <div class="unread-badge">3</div>
+        </div>
+        <div class="tab-item"><span class="tab-icon">🥕</span>나의당근</div>
+      </div>
+    </div>
+    <div class="variant-block">
+      <div class="variant-label">미읽음 많음 (99+)</div>
+      <div class="tab-bar-demo">
+        <div class="tab-item active"><span class="tab-icon">🏠</span>홈</div>
+        <div class="tab-item">
+          <span class="tab-icon">💬</span>채팅
+          <div class="unread-badge" style="font-size:9px">99+</div>
+        </div>
+        <div class="tab-item"><span class="tab-icon">🥕</span>나의당근</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Component Hierarchy -->
+<div class="section" style="border-bottom:none">
+  <div class="section-header">
+    <h2>컴포넌트 조합 관계</h2>
+    <p>화면별로 어떤 커스텀 컴포넌트가 조합되는지 구조도.</p>
+  </div>
+  <div class="component-map">
+    <svg viewBox="0 0 900 400" xmlns="http://www.w3.org/2000/svg" style="font-family:-apple-system,sans-serif">
+      <!-- Screen boxes -->
+      <!-- 홈 피드 -->
+      <rect x="20" y="20" width="160" height="200" rx="10" fill="#1F2937" stroke="#FF7E36" stroke-width="1.5"/>
+      <text x="100" y="45" text-anchor="middle" fill="#FF7E36" font-size="13" font-weight="700">홈 피드</text>
+      <rect x="35" y="58" width="130" height="28" rx="6" fill="#374151"/>
+      <text x="100" y="77" text-anchor="middle" fill="#9CA3AF" font-size="11">PostCard</text>
+      <rect x="35" y="92" width="130" height="28" rx="6" fill="#374151"/>
+      <text x="100" y="111" text-anchor="middle" fill="#9CA3AF" font-size="11">StatusBadge</text>
+      <rect x="35" y="126" width="130" height="28" rx="6" fill="#374151"/>
+      <text x="100" y="145" text-anchor="middle" fill="#9CA3AF" font-size="11">UnreadBadge</text>
+      <!-- 게시글 상세 -->
+      <rect x="220" y="20" width="160" height="200" rx="10" fill="#1F2937" stroke="#FF7E36" stroke-width="1.5"/>
+      <text x="300" y="45" text-anchor="middle" fill="#FF7E36" font-size="13" font-weight="700">게시글 상세</text>
+      <rect x="235" y="58" width="130" height="28" rx="6" fill="#374151"/>
+      <text x="300" y="77" text-anchor="middle" fill="#9CA3AF" font-size="11">ImageSlider</text>
+      <rect x="235" y="92" width="130" height="28" rx="6" fill="#374151"/>
+      <text x="300" y="111" text-anchor="middle" fill="#9CA3AF" font-size="11">MannerTempWidget</text>
+      <rect x="235" y="126" width="130" height="28" rx="6" fill="#374151"/>
+      <text x="300" y="145" text-anchor="middle" fill="#9CA3AF" font-size="11">StatusBadge</text>
+      <rect x="235" y="160" width="130" height="28" rx="6" fill="#374151"/>
+      <text x="300" y="179" text-anchor="middle" fill="#9CA3AF" font-size="11">TradeCompleteSheet</text>
+      <!-- 채팅 목록 -->
+      <rect x="420" y="20" width="160" height="200" rx="10" fill="#1F2937" stroke="#FF7E36" stroke-width="1.5"/>
+      <text x="500" y="45" text-anchor="middle" fill="#FF7E36" font-size="13" font-weight="700">채팅 목록</text>
+      <rect x="435" y="58" width="130" height="28" rx="6" fill="#374151"/>
+      <text x="500" y="77" text-anchor="middle" fill="#9CA3AF" font-size="11">ChatListTile</text>
+      <rect x="435" y="92" width="130" height="28" rx="6" fill="#374151"/>
+      <text x="500" y="111" text-anchor="middle" fill="#9CA3AF" font-size="11">UnreadBadge</text>
+      <!-- 채팅방 -->
+      <rect x="620" y="20" width="160" height="200" rx="10" fill="#1F2937" stroke="#FF7E36" stroke-width="1.5"/>
+      <text x="700" y="45" text-anchor="middle" fill="#FF7E36" font-size="13" font-weight="700">채팅방</text>
+      <rect x="635" y="58" width="130" height="28" rx="6" fill="#374151"/>
+      <text x="700" y="77" text-anchor="middle" fill="#9CA3AF" font-size="11">ChatBubble</text>
+      <rect x="635" y="92" width="130" height="28" rx="6" fill="#374151"/>
+      <text x="700" y="111" text-anchor="middle" fill="#9CA3AF" font-size="11">TradeCompleteSheet</text>
+      <!-- 마이페이지 -->
+      <rect x="220" y="255" width="160" height="120" rx="10" fill="#1F2937" stroke="#374151" stroke-width="1.5"/>
+      <text x="300" y="280" text-anchor="middle" fill="#9CA3AF" font-size="13" font-weight="700">나의당근</text>
+      <rect x="235" y="293" width="130" height="28" rx="6" fill="#374151"/>
+      <text x="300" y="312" text-anchor="middle" fill="#9CA3AF" font-size="11">MannerTempWidget</text>
+      <rect x="235" y="327" width="130" height="28" rx="6" fill="#374151"/>
+      <text x="300" y="346" text-anchor="middle" fill="#9CA3AF" font-size="11">PostCard (판매관리)</text>
+      <!-- Arrow labels -->
+      <text x="450" y="395" text-anchor="middle" fill="#4B5563" font-size="11">■ 오렌지 테두리: MVP Phase 1 핵심 화면  ■ 회색 테두리: Phase 2 화면</text>
+    </svg>
+  </div>
+</div>
+
+</body>
+</html>

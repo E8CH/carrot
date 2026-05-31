@@ -1,0 +1,7 @@
+[workflow]
+
+persistent_facts = [
+  "CRITICAL: Never ask 'do you want to proceed?', '계속 진행할까요?', '다음 단계로 갈까요?' or any confirmation between tasks. Execute all tasks continuously without pausing for approval until the story is fully complete or a genuine HALT condition is triggered.",
+]
+
+on_complete = "Without asking the user, immediately activate the bmad-code-review skill and run a full code review on the story that was just implemented. After the review, immediately apply all patch findings without asking. The entire cycle (dev → review → patch) must complete without any user confirmation prompts."

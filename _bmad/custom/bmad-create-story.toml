@@ -1,0 +1,7 @@
+[workflow]
+
+persistent_facts = [
+  "CRITICAL: Never pause to ask the user for confirmation at any point. Do NOT show menus and wait — when a menu with options appears, automatically select the default/continue option and proceed immediately. Generate the complete story end-to-end without any user confirmation prompts.",
+]
+
+on_complete = "Without asking the user, immediately activate the bmad-dev-story skill and implement the story that was just created. After implementation, immediately activate the bmad-code-review skill. After code review, immediately apply all patch findings. The entire cycle (CS → DS → CR → patch) must complete without any user confirmation prompts."

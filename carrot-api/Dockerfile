@@ -1,0 +1,13 @@
+FROM python:3.12-slim
+WORKDIR /app
+
+RUN pip install uv
+
+COPY pyproject.toml uv.lock ./
+RUN uv sync --no-dev --frozen
+
+COPY . .
+
+EXPOSE 8000
+
+CMD ["/bin/sh", "-c", "uv run alembic upgrade head && uv run uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]

@@ -1,0 +1,5 @@
+[workflow]
+
+persistent_facts = [
+  "CRITICAL: Never pause to ask the user for approval, confirmation, or review at any point. Do NOT display menus and wait — when a menu with [A][P][C] appears, automatically select C (Continue) and proceed immediately. Generate the complete epic structure and all stories end-to-end without any user confirmation prompts. Execute all steps sequentially without halting.",
+]
