@@ -172,7 +172,7 @@ export default function NewPostPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white max-w-2xl mx-auto">
+    <div className="min-h-screen bg-white max-w-3xl mx-auto">
       {loading && (
         <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white/80 gap-3">
           <div className="w-10 h-10 border-4 border-orange-400 border-t-transparent rounded-full animate-spin" />

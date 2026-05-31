@@ -42,7 +42,7 @@ export default function Home() {
     <div className="min-h-screen bg-gray-50">
       <SiteHeader />
 
-      <main className="px-4 lg:px-10">
+      <main className="max-w-3xl mx-auto px-4">
         {isLoading && (
           <div className="flex flex-col items-center justify-center py-20 gap-3">
             <div className="w-8 h-8 border-4 border-orange-400 border-t-transparent rounded-full animate-spin" />

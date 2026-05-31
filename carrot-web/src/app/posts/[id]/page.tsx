@@ -237,7 +237,7 @@ export default function PostDetailPage() {
 
       <SiteHeader />
 
-      <div className="max-w-6xl mx-auto px-4 md:px-8">
+      <div className="max-w-3xl mx-auto px-4">
         <div className="py-3">
           <button onClick={() => router.back()} className="text-gray-500 text-sm hover:text-gray-700">← 뒤로</button>
         </div>
@@ -322,7 +322,7 @@ export default function PostDetailPage() {
             </div>
           </div>{/* right col end */}
         </div>{/* grid end */}
-      </div>{/* max-w-6xl end */}
+      </div>{/* max-w-3xl end */}
 
       {/* 모바일 전용 하단 고정 버튼 */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t px-4 py-3 flex flex-col gap-2">

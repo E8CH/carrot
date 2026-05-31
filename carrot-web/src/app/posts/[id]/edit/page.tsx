@@ -160,7 +160,7 @@ export default function EditPostPage() {
   const totalCount = existingPhotos.length + newFiles.length
 
   return (
-    <div className="min-h-screen bg-white max-w-2xl mx-auto">
+    <div className="min-h-screen bg-white max-w-3xl mx-auto">
       <header className="sticky top-0 z-10 bg-white border-b px-4 py-3 flex items-center justify-between">
         <button onClick={() => router.back()} className="text-gray-600">← 뒤로</button>
         <h1 className="font-semibold">게시글 수정</h1>
