@@ -17,10 +17,15 @@ import { Button } from '@/components/ui/button'
 function ImageSlider({ photos }: { photos: string[] }) {
   const [idx, setIdx] = useState(0)
   const startX = useRef(0)
-  const dragging = useRef(false)
 
   const prev = () => setIdx((i) => Math.max(0, i - 1))
   const next = () => setIdx((i) => Math.min(photos.length - 1, i + 1))
+
+  const handleSwipeEnd = (endX: number) => {
+    const diff = endX - startX.current
+    if (diff > 50) prev()
+    else if (diff < -50) next()
+  }
 
   if (photos.length === 0) {
     return (
@@ -33,22 +38,10 @@ function ImageSlider({ photos }: { photos: string[] }) {
   return (
     <div
       className="relative w-full h-60 overflow-hidden bg-gray-100 select-none"
-      onMouseDown={(e) => { startX.current = e.clientX; dragging.current = true }}
-      onMouseMove={(e) => {
-        if (!dragging.current) return
-        if (e.clientX - startX.current > 50) { prev(); dragging.current = false }
-        if (startX.current - e.clientX > 50) { next(); dragging.current = false }
-      }}
-      onMouseUp={() => { dragging.current = false }}
-      onMouseLeave={() => { dragging.current = false; startX.current = 0 }}
-      onTouchStart={(e) => { startX.current = e.touches[0].clientX; dragging.current = true }}
-      onTouchMove={(e) => {
-        if (!dragging.current) return
-        const cx = e.touches[0].clientX
-        if (cx - startX.current > 50) { prev(); dragging.current = false }
-        if (startX.current - cx > 50) { next(); dragging.current = false }
-      }}
-      onTouchEnd={() => { dragging.current = false }}
+      onMouseDown={(e) => { startX.current = e.clientX }}
+      onMouseUp={(e) => handleSwipeEnd(e.clientX)}
+      onTouchStart={(e) => { startX.current = e.touches[0].clientX }}
+      onTouchEnd={(e) => handleSwipeEnd(e.changedTouches[0].clientX)}
     >
       <div
         className="flex h-full transition-transform duration-300 ease-out"
