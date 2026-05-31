@@ -1,10 +1,11 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { useInfiniteQuery } from '@tanstack/react-query'
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import Link from 'next/link'
 import { PostCard } from '@/components/common/PostCard'
 import { postsApi } from '@/lib/api/posts'
+import { chatsApi } from '@/lib/api/chats'
 
 export default function Home() {
   const bottomRef = useRef<HTMLDivElement>(null)
@@ -13,6 +14,13 @@ export default function Home() {
   useEffect(() => {
     setIsLoggedIn(!!localStorage.getItem('token'))
   }, [])
+
+  const { data: unreadData } = useQuery({
+    queryKey: ['unread-count'],
+    queryFn: () => chatsApi.getUnreadCount().catch(() => ({ count: 0 })),
+    refetchInterval: 5000,
+    enabled: isLoggedIn,
+  })
 
   const {
     data,
@@ -49,7 +57,14 @@ export default function Home() {
         <span className="text-xl font-bold" style={{ color: '#FF7E36' }}>🥕 carrot</span>
         <div className="flex items-center gap-3">
           <Link href="/posts/new" className="text-sm font-medium" style={{ color: '#FF7E36' }}>글쓰기</Link>
-          <Link href="/chat" className="text-sm text-gray-500 hover:text-gray-700">채팅</Link>
+          <Link href="/chat" className="relative text-sm text-gray-500 hover:text-gray-700">
+            채팅
+            {isLoggedIn && (unreadData?.count ?? 0) > 0 && (
+              <span className="absolute -top-2 -right-3 min-w-[16px] h-4 px-1 rounded-full text-white text-[10px] flex items-center justify-center" style={{ backgroundColor: '#FF7E36' }}>
+                {(unreadData?.count ?? 0) > 99 ? '99+' : unreadData?.count}
+              </span>
+            )}
+          </Link>
           <Link href="/my" className="text-sm text-gray-500 hover:text-gray-700">나의당근</Link>
           {!isLoggedIn && (
             <Link href="/auth/login" className="text-sm text-gray-500 hover:text-gray-700">로그인</Link>
