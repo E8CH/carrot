@@ -102,8 +102,9 @@ export default function ChatListPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white max-w-4xl mx-auto">
+    <div className="min-h-screen bg-white">
       <SiteHeader />
+      <div className="max-w-3xl mx-auto">
 
       {isLoading && (
         <div className="p-8 text-center text-gray-400">불러오는 중...</div>
@@ -124,6 +125,7 @@ export default function ChatListPage() {
           />
         ))}
       </div>
+      </div>{/* max-w-3xl end */}
     </div>
   )
 }

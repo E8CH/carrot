@@ -84,9 +84,9 @@ export default function MyPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 max-w-4xl mx-auto">
+    <div className="min-h-screen bg-gray-50">
       <SiteHeader />
-      <div className="px-4 py-8">
+      <div className="px-4 lg:px-10 py-8">
 
       {/* 프로필 카드 */}
       <div className="bg-white rounded-xl p-6 shadow-sm space-y-4">
