@@ -2,9 +2,11 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { chatsApi, MessageResponse } from '@/lib/api/chats'
+import { postsApi } from '@/lib/api/posts'
 import { usersApi } from '@/lib/api/users'
+import { TradeCompleteSheet } from '@/components/posts/TradeCompleteSheet'
 
 interface OptimisticMessage {
   tempId: number
@@ -56,8 +58,11 @@ export default function ChatRoomPage() {
   const [sending, setSending] = useState(false)
   const [optimisticMessages, setOptimisticMessages] = useState<OptimisticMessage[]>([])
   const [allMessages, setAllMessages] = useState<MessageResponse[]>([])
+  const [statusChanging, setStatusChanging] = useState(false)
+  const [showTradeSheet, setShowTradeSheet] = useState(false)
   const lastIdRef = useRef<number | undefined>(undefined)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const queryClient = useQueryClient()
 
   const { data: me } = useQuery({
     queryKey: ['me'],
@@ -65,6 +70,25 @@ export default function ChatRoomPage() {
     retry: false,
   })
   const myEmail = me?.email ?? ''
+  const isSeller = !!myEmail && myEmail === sellerEmail
+
+  const { data: post, refetch: refetchPost } = useQuery({
+    queryKey: ['posts', postId],
+    queryFn: () => postsApi.getPost(postId),
+    enabled: !!postId,
+  })
+
+  const handleStatusChange = async (newStatus: string) => {
+    if (!postId) return
+    setStatusChanging(true)
+    try {
+      await postsApi.changeStatus(postId, newStatus)
+      refetchPost()
+      queryClient.invalidateQueries({ queryKey: ['posts'] })
+    } finally {
+      setStatusChanging(false)
+    }
+  }
 
   // 채팅방 진입 시 읽음 처리
   useEffect(() => {
@@ -150,6 +174,52 @@ export default function ChatRoomPage() {
           <p className="font-semibold text-sm">{opponentEmail || '채팅'}</p>
         </div>
       </header>
+
+      {/* 판매자 전용 상태 변경 바 */}
+      {isSeller && post && post.status !== '거래완료' && (
+        <div className="border-b px-4 py-2 bg-orange-50 flex items-center justify-between gap-2">
+          <span className="text-xs text-gray-500">
+            현재 상태: <span className="font-medium text-orange-600">{post.status}</span>
+          </span>
+          <div className="flex gap-2">
+            {post.status === '판매중' && (
+              <button
+                disabled={statusChanging}
+                onClick={() => handleStatusChange('예약중')}
+                className="text-xs px-3 py-1 rounded-full border border-gray-300 text-gray-600 bg-white hover:bg-gray-50 disabled:opacity-50"
+              >
+                예약중으로 변경
+              </button>
+            )}
+            {post.status === '예약중' && (
+              <>
+                <button
+                  disabled={statusChanging}
+                  onClick={() => handleStatusChange('판매중')}
+                  className="text-xs px-3 py-1 rounded-full border border-gray-300 text-gray-600 bg-white hover:bg-gray-50 disabled:opacity-50"
+                >
+                  판매중으로 변경
+                </button>
+                <button
+                  disabled={statusChanging}
+                  onClick={() => setShowTradeSheet(true)}
+                  className="text-xs px-3 py-1 rounded-full text-white disabled:opacity-50"
+                  style={{ backgroundColor: '#FF7E36' }}
+                >
+                  거래완료
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      <TradeCompleteSheet
+        postId={postId}
+        isOpen={showTradeSheet}
+        onClose={() => setShowTradeSheet(false)}
+        onComplete={() => { setShowTradeSheet(false); refetchPost() }}
+      />
 
       <div className="flex-1 overflow-y-auto py-3">
         {allMessages.map(msg => (
