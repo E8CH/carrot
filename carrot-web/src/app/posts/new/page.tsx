@@ -173,6 +173,12 @@ export default function NewPostPage() {
 
   return (
     <div className="min-h-screen bg-white max-w-lg mx-auto">
+      {loading && (
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white/80 gap-3">
+          <div className="w-10 h-10 border-4 border-orange-400 border-t-transparent rounded-full animate-spin" />
+          <p className="text-sm text-gray-500">등록 중...</p>
+        </div>
+      )}
       {toast && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-gray-800 text-white text-sm px-5 py-2.5 rounded-full shadow-lg">
           {toast}

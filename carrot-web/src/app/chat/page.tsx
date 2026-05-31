@@ -65,6 +65,12 @@ function ChatListTile({
 
 export default function ChatListPage() {
   const router = useRouter()
+  // 채팅 목록 진입 시 배지 즉시 갱신
+  useQuery({
+    queryKey: ['unread-count'],
+    queryFn: () => chatsApi.getUnreadCount().catch(() => ({ count: 0 })),
+    staleTime: 0,
+  })
 
   const { data: me } = useQuery({
     queryKey: ['me'],

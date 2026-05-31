@@ -18,7 +18,7 @@ export default function Home() {
   const { data: unreadData } = useQuery({
     queryKey: ['unread-count'],
     queryFn: () => chatsApi.getUnreadCount().catch(() => ({ count: 0 })),
-    refetchInterval: 5000,
+    refetchInterval: 3000,
     staleTime: 0,
     enabled: isLoggedIn,
   })
@@ -55,7 +55,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="sticky top-0 z-10 bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between">
-        <span className="text-xl font-bold" style={{ color: '#FF7E36' }}>🥕 carrot</span>
+        <Link href="/" className="text-xl font-bold" style={{ color: '#FF7E36' }}>🥕 carrot</Link>
         <div className="flex items-center gap-3">
           <Link href="/posts/new" className="text-sm font-medium" style={{ color: '#FF7E36' }}>글쓰기</Link>
           <Link href="/chat" className="relative text-sm text-gray-500 hover:text-gray-700">
