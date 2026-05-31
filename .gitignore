@@ -54,4 +54,5 @@ alembic/versions/*.pyc
 
 # Tool internals
 .claude/
+carrot-api$f
 carrot-api$f/
