@@ -289,68 +289,37 @@ export default function PostDetailPage() {
               {chatError && <p className="text-xs text-red-500">{chatError}</p>}
               {statusError && <p className="text-xs text-red-500">{statusError}</p>}
               <div className="flex gap-2">
-        {chatError && <p className="text-xs text-red-500 text-center">{chatError}</p>}
-        {statusError && <p className="text-xs text-red-500 text-center">{statusError}</p>}
-        <div className="flex gap-2">
-        {isOwner ? (
-          <>
-            {post.status !== '거래완료' && (
-              <>
-                <Button
-                  variant="outline"
-                  className="shrink-0 text-sm px-3 text-orange-600 border-orange-400 hover:bg-orange-50"
-                  onClick={() => setShowTradeSheet(true)}
-                >
-                  거래완료
-                </Button>
-                <Button
-                  variant="outline"
-                  className="shrink-0 text-sm px-3"
-                  onClick={() => handleStatusChange(post.status === '판매중' ? '예약중' : '판매중')}
-                  disabled={statusLoading}
-                >
-                  {post.status === '판매중' ? '예약중' : '판매중'}
-                </Button>
-              </>
-            )}
-            <Button
-              variant="outline"
-              className="flex-1"
-              onClick={() => router.push(`/posts/${post.id}/edit`)}
-            >
-              수정
-            </Button>
-            <Button
-              variant="outline"
-              className="flex-1 text-red-500 border-red-300 hover:bg-red-50"
-              onClick={() => setShowDeleteDialog(true)}
-            >
-              삭제
-            </Button>
-          </>
-        ) : (
-          <>
-            <Button
-              variant="outline"
-              className="w-14 h-12 shrink-0 text-lg"
-              onClick={handleLike}
-              aria-label={isLiked ? '찜 해제' : '찜하기'}
-            >
-              {isLiked ? '❤️' : '🤍'}
-              <span className="text-xs ml-0.5">{likeCount}</span>
-            </Button>
-            <Button
-              className="flex-1"
-              style={{ backgroundColor: chatLoading ? '#FFB899' : '#FF7E36' }}
-              onClick={handleChat}
-              disabled={chatLoading}
-            >
-              {chatLoading ? '연결 중...' : '채팅하기'}
-            </Button>
-          </>
-        )}
+                {isOwner ? (
+                  <>
+                    {post.status !== '거래완료' && (
+                      <>
+                        <Button variant="outline" className="shrink-0 text-sm px-3 text-orange-600 border-orange-400"
+                          onClick={() => setShowTradeSheet(true)}>거래완료</Button>
+                        <Button variant="outline" className="shrink-0 text-sm px-3"
+                          onClick={() => handleStatusChange(post.status === '판매중' ? '예약중' : '판매중')}
+                          disabled={statusLoading}>
+                          {post.status === '판매중' ? '예약중' : '판매중'}
+                        </Button>
+                      </>
+                    )}
+                    <Button variant="outline" className="flex-1"
+                      onClick={() => router.push(`/posts/${post.id}/edit`)}>수정</Button>
+                    <Button variant="outline" className="flex-1 text-red-500 border-red-300"
+                      onClick={() => setShowDeleteDialog(true)}>삭제</Button>
+                  </>
+                ) : (
+                  <>
+                    <Button variant="outline" className="w-14 h-12 shrink-0 text-lg" onClick={handleLike}>
+                      {isLiked ? '❤️' : '🤍'}<span className="text-xs ml-0.5">{likeCount}</span>
+                    </Button>
+                    <Button className="flex-1" style={{ backgroundColor: chatLoading ? '#FFB899' : '#FF7E36' }}
+                      onClick={handleChat} disabled={chatLoading}>
+                      {chatLoading ? '연결 중...' : '채팅하기'}
+                    </Button>
+                  </>
+                )}
+              </div>
             </div>
-            </div>{/* desktop buttons end */}
           </div>{/* right col end */}
         </div>{/* grid end */}
       </div>{/* max-w-6xl end */}
