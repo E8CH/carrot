@@ -11,6 +11,7 @@ import { StatusBadge } from '@/components/common/StatusBadge'
 import { MannerTempWidget } from '@/components/common/MannerTempWidget'
 import { TradeCompleteSheet } from '@/components/posts/TradeCompleteSheet'
 import { Button } from '@/components/ui/button'
+import { SiteHeader } from '@/components/layout/SiteHeader'
 
 // ─── ImageSlider ─────────────────────────────────────────────────────────────
 
@@ -24,7 +25,7 @@ function ImageSlider({ photos }: { photos: string[] }) {
 
   if (photos.length === 0) {
     return (
-      <div className="w-full h-60 bg-gray-100 flex items-center justify-center text-gray-300 text-5xl">
+      <div className="w-full h-80 bg-gray-100 flex items-center justify-center text-gray-300 text-5xl">
         🖼️
       </div>
     )
@@ -32,7 +33,7 @@ function ImageSlider({ photos }: { photos: string[] }) {
 
   return (
     <div
-      className="relative w-full h-60 overflow-hidden bg-gray-100 select-none"
+      className="relative w-full h-80 overflow-hidden bg-gray-100 select-none"
       style={{ touchAction: 'pan-y' }}
       onPointerDown={(e) => {
         startX.current = e.clientX
@@ -238,17 +239,19 @@ export default function PostDetailPage() {
         </div>
       )}
 
-      {/* 헤더 */}
-      <header className="sticky top-0 z-10 bg-white border-b px-4 py-3 flex items-center gap-3">
-        <button onClick={() => router.back()} className="text-gray-600 text-lg">←</button>
-        <span className="font-semibold flex-1 truncate">{post.title}</span>
-      </header>
+      <SiteHeader />
+      {/* 뒤로가기 */}
+      <div className="px-4 py-2">
+        <button onClick={() => router.back()} className="text-gray-500 text-sm flex items-center gap-1 hover:text-gray-700">
+          ← 뒤로
+        </button>
+      </div>
 
       {/* 이미지 슬라이더 */}
       <ImageSlider photos={post.photos} />
 
       {/* 판매자 프로필 */}
-      <div className="flex items-center gap-3 px-4 py-3 border-b">
+      <div className="flex items-center gap-3 px-6 py-4 border-b">
         <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-lg">👤</div>
         <div>
           <p className="text-sm font-medium text-gray-900">{post.seller_email}</p>
@@ -257,7 +260,7 @@ export default function PostDetailPage() {
       </div>
 
       {/* 본문 */}
-      <div className="px-4 py-4 space-y-3">
+      <div className="px-6 py-5 space-y-4">
         {/* 제목 + 상태 배지 */}
         <div className="flex items-center gap-2">
           <h1 className="text-lg font-semibold text-gray-900 flex-1">{post.title}</h1>
