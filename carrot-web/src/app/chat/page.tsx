@@ -1,11 +1,11 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 import Image from 'next/image'
 import { useQuery } from '@tanstack/react-query'
 import { chatsApi, ChatRoomListItem } from '@/lib/api/chats'
 import { usersApi } from '@/lib/api/users'
+import { SiteHeader } from '@/components/layout/SiteHeader'
 
 function formatElapsed(isoString: string): string {
   const diff = Date.now() - new Date(isoString).getTime()
@@ -103,10 +103,7 @@ export default function ChatListPage() {
 
   return (
     <div className="min-h-screen bg-white max-w-lg mx-auto">
-      <header className="sticky top-0 z-10 bg-white border-b px-4 py-3 flex items-center gap-3">
-        <Link href="/" className="text-gray-500 text-sm">← 홈</Link>
-        <h1 className="font-bold text-lg">채팅</h1>
-      </header>
+      <SiteHeader />
 
       {isLoading && (
         <div className="p-8 text-center text-gray-400">불러오는 중...</div>

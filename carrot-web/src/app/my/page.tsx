@@ -9,6 +9,7 @@ import { usersApi } from '@/lib/api/users'
 import { postsApi } from '@/lib/api/posts'
 import { MannerTempWidget } from '@/components/common/MannerTempWidget'
 import { PostCard } from '@/components/common/PostCard'
+import { SiteHeader } from '@/components/layout/SiteHeader'
 
 function formatDate(isoString: string): string {
   return new Date(isoString).toLocaleDateString('ko-KR', {
@@ -84,10 +85,7 @@ export default function MyPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 max-w-lg mx-auto">
-      <header className="sticky top-0 z-10 bg-white border-b px-4 py-3 flex items-center gap-3">
-        <Link href="/" className="text-gray-500 text-sm">← 홈</Link>
-        <h1 className="font-bold text-lg" style={{ color: '#FF7E36' }}>나의 당근</h1>
-      </header>
+      <SiteHeader />
       <div className="px-4 py-8">
 
       {/* 프로필 카드 */}
