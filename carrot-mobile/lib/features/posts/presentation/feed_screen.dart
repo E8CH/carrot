@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/providers/api_client_provider.dart';
 import '../../../shared/widgets/post_card.dart';
+import '../../../shared/widgets/shimmer_box.dart';
 import '../data/posts_repository.dart';
 import 'post_detail_screen.dart';
 
@@ -72,6 +73,14 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
     }
   }
 
+  Widget _buildSkeletonList() {
+    return ListView.separated(
+      itemCount: 6,
+      separatorBuilder: (_, __) => const Divider(height: 1),
+      itemBuilder: (_, __) => const PostCardSkeleton(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -90,11 +99,13 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
           });
           await _loadPosts();
         },
-        child: _posts.isEmpty && !_loading
-            ? _error != null
-                ? Center(child: Text(_error!, style: const TextStyle(color: Colors.red)))
-                : const Center(child: Text('게시글이 없습니다.', style: TextStyle(color: Colors.grey)))
-            : ListView.separated(
+        child: _posts.isEmpty && _loading
+            ? _buildSkeletonList()
+            : _posts.isEmpty
+                ? _error != null
+                    ? Center(child: Text(_error!, style: const TextStyle(color: Colors.red)))
+                    : const Center(child: Text('게시글이 없습니다.', style: TextStyle(color: Colors.grey)))
+                : ListView.separated(
                 controller: _scrollController,
                 itemCount: _posts.length + (_hasMore ? 1 : 0),
                 separatorBuilder: (ctx, idx) => const Divider(height: 1),

@@ -5,6 +5,7 @@ import '../../../core/api/api_endpoints.dart';
 import '../../../core/providers/api_client_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../shared/widgets/manner_temp_widget.dart';
+import '../../../shared/widgets/shimmer_box.dart';
 import '../../../shared/widgets/status_badge.dart';
 import '../../chats/data/chats_repository.dart';
 import '../../chats/presentation/chat_room_screen.dart';
@@ -212,7 +213,43 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
   @override
   Widget build(BuildContext context) {
     if (_loading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return Scaffold(
+        body: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const ShimmerBox(height: 240, borderRadius: 0),
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(children: [
+                      const ShimmerBox(width: 40, height: 40, borderRadius: 20),
+                      const SizedBox(width: 12),
+                      Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        ShimmerBox(width: 140, height: 14),
+                        const SizedBox(height: 6),
+                        ShimmerBox(width: 80, height: 12),
+                      ]),
+                    ]),
+                    const SizedBox(height: 20),
+                    const ShimmerBox(height: 22),
+                    const SizedBox(height: 10),
+                    ShimmerBox(width: 100, height: 20),
+                    const SizedBox(height: 20),
+                    const ShimmerBox(height: 14),
+                    const SizedBox(height: 8),
+                    const ShimmerBox(height: 14),
+                    const SizedBox(height: 8),
+                    ShimmerBox(width: 200, height: 14),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
     }
     if (_error != null || _post == null) {
       return Scaffold(

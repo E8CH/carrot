@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'shimmer_box.dart';
 import 'status_badge.dart';
 
 class PostCard extends StatelessWidget {
@@ -41,7 +42,6 @@ class PostCard extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 썸네일 100×100
             Stack(
               children: [
                 ClipRRect(
@@ -52,6 +52,11 @@ class PostCard extends StatelessWidget {
                           width: 100,
                           height: 100,
                           fit: BoxFit.cover,
+                          loadingBuilder: (ctx, child, progress) {
+                            if (progress == null) return child;
+                            return const ShimmerBox(
+                                width: 100, height: 100, borderRadius: 0);
+                          },
                           errorBuilder: (ctx, err, st) => _placeholder(),
                         )
                       : _placeholder(),
@@ -64,19 +69,24 @@ class PostCard extends StatelessWidget {
               ],
             ),
             const SizedBox(width: 12),
-            // 텍스트
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, maxLines: 2, overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
+                  Text(title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                          fontSize: 15, fontWeight: FontWeight.w500)),
                   const SizedBox(height: 4),
-                  Text(priceText, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                  Text(priceText,
+                      style: const TextStyle(
+                          fontSize: 14, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 6),
                   Text(
                     '채팅 $chatCount  관심 $likeCount  ${_timeAgo(createdAt)}',
-                    style: const TextStyle(fontSize: 12, color: Colors.grey),
+                    style:
+                        const TextStyle(fontSize: 12, color: Colors.grey),
                   ),
                 ],
               ),
@@ -91,6 +101,37 @@ class PostCard extends StatelessWidget {
         width: 100,
         height: 100,
         color: const Color(0xFFE5E7EB),
-        child: const Icon(Icons.image_outlined, color: Colors.white54, size: 36),
+        child:
+            const Icon(Icons.image_outlined, color: Colors.white54, size: 36),
       );
+}
+
+class PostCardSkeleton extends StatelessWidget {
+  const PostCardSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const ShimmerBox(width: 100, height: 100, borderRadius: 12),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const ShimmerBox(height: 16),
+                const SizedBox(height: 6),
+                ShimmerBox(width: 120, height: 14),
+                const SizedBox(height: 10),
+                ShimmerBox(width: 160, height: 12),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
