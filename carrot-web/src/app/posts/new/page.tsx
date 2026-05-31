@@ -7,6 +7,7 @@ import { postsApi, type DraftResponse } from '@/lib/api/posts'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { SiteHeader } from '@/components/layout/SiteHeader'
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024  // 5MB
 const MAX_PHOTOS = 10
@@ -172,7 +173,7 @@ export default function NewPostPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white max-w-3xl mx-auto">
+    <div className="min-h-screen bg-white">
       {loading && (
         <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white/80 gap-3">
           <div className="w-10 h-10 border-4 border-orange-400 border-t-transparent rounded-full animate-spin" />
@@ -251,18 +252,21 @@ export default function NewPostPage() {
         </div>
       )}
 
-      <header className="sticky top-0 z-10 bg-white border-b px-4 py-3 flex items-center justify-between">
-        <button onClick={handleBack} className="text-gray-600">← 뒤로</button>
-        <h1 className="font-semibold">내 물건 팔기</h1>
-        <button
-          type="button"
-          onClick={handleSaveDraft}
-          disabled={draftSaving || loading}
-          className="text-sm text-gray-500 disabled:opacity-40"
-        >
-          임시저장
-        </button>
-      </header>
+      <SiteHeader />
+
+      <div className="max-w-3xl mx-auto">
+        <header className="sticky top-[52px] z-10 bg-white border-b px-4 py-3 flex items-center justify-between">
+          <button onClick={handleBack} className="text-gray-600">← 뒤로</button>
+          <h1 className="font-semibold">내 물건 팔기</h1>
+          <button
+            type="button"
+            onClick={handleSaveDraft}
+            disabled={draftSaving || loading}
+            className="text-sm text-gray-500 disabled:opacity-40"
+          >
+            임시저장
+          </button>
+        </header>
 
       <form onSubmit={handleSubmit} className="p-4 space-y-5">
         {/* 사진 선택 */}
@@ -373,6 +377,7 @@ export default function NewPostPage() {
           {loading ? '등록 중...' : '작성 완료'}
         </Button>
       </form>
+      </div>
     </div>
   )
 }
