@@ -6,8 +6,14 @@ import Link from 'next/link'
 import { PostCard } from '@/components/common/PostCard'
 import { postsApi } from '@/lib/api/posts'
 
+function useIsLoggedIn() {
+  if (typeof window === 'undefined') return false
+  return !!localStorage.getItem('token')
+}
+
 export default function Home() {
   const bottomRef = useRef<HTMLDivElement>(null)
+  const isLoggedIn = useIsLoggedIn()
 
   const {
     data,
@@ -45,6 +51,9 @@ export default function Home() {
         <div className="flex items-center gap-3">
           <Link href="/posts/new" className="text-sm font-medium" style={{ color: '#FF7E36' }}>글쓰기</Link>
           <Link href="/my" className="text-sm text-gray-500 hover:text-gray-700">나의당근</Link>
+          {!isLoggedIn && (
+            <Link href="/auth/login" className="text-sm text-gray-500 hover:text-gray-700">로그인</Link>
+          )}
         </div>
       </header>
 
