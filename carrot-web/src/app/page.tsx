@@ -19,6 +19,7 @@ export default function Home() {
     queryKey: ['unread-count'],
     queryFn: () => chatsApi.getUnreadCount().catch(() => ({ count: 0 })),
     refetchInterval: 5000,
+    staleTime: 0,
     enabled: isLoggedIn,
   })
 

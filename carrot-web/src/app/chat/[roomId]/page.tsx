@@ -93,12 +93,14 @@ export default function ChatRoomPage() {
     }
   }
 
-  // 채팅방 진입 시 읽음 처리
+  // 채팅방 진입 시 읽음 처리 + unread-count 캐시 무효화
   useEffect(() => {
     if (roomId && me) {
-      chatsApi.markAsRead(roomId as string).catch(() => {})
+      chatsApi.markAsRead(roomId as string)
+        .then(() => queryClient.invalidateQueries({ queryKey: ['unread-count'] }))
+        .catch(() => {})
     }
-  }, [roomId, me])
+  }, [roomId, me, queryClient])
 
   // 2500ms 폴링 (SM-C1 준수)
   const { data: polledMessages = [] } = useQuery<MessageResponse[]>({
