@@ -33,10 +33,10 @@ function ImageSlider({ photos }: { photos: string[] }) {
   return (
     <div
       className="relative w-full h-60 overflow-hidden bg-gray-100 select-none"
+      style={{ touchAction: 'pan-y' }}
       onPointerDown={(e) => {
         startX.current = e.clientX
         isDragging.current = true
-        e.currentTarget.setPointerCapture(e.pointerId)
       }}
       onPointerUp={(e) => {
         if (!isDragging.current) return
@@ -69,16 +69,30 @@ function ImageSlider({ photos }: { photos: string[] }) {
         ))}
       </div>
       {photos.length > 1 && (
-        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
-          {photos.map((_, i) => (
-            <div
-              key={i}
-              className={`w-1.5 h-1.5 rounded-full transition-colors ${
-                i === idx ? 'bg-white' : 'bg-white/50'
-              }`}
-            />
-          ))}
-        </div>
+        <>
+          {idx > 0 && (
+            <button
+              onClick={prev}
+              className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 text-white flex items-center justify-center text-lg z-10"
+            >‹</button>
+          )}
+          {idx < photos.length - 1 && (
+            <button
+              onClick={next}
+              className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 text-white flex items-center justify-center text-lg z-10"
+            >›</button>
+          )}
+          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
+            {photos.map((_, i) => (
+              <div
+                key={i}
+                className={`w-1.5 h-1.5 rounded-full transition-colors ${
+                  i === idx ? 'bg-white' : 'bg-white/50'
+                }`}
+              />
+            ))}
+          </div>
+        </>
       )}
     </div>
   )
