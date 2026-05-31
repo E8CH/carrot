@@ -53,6 +53,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
     });
 
     try {
+      debugPrint('[FEED] _loadPosts start page=$_page');
       final client = ref.read(apiClientProvider);
       final repo = PostsRepository(client);
       final data = await repo.getPosts(page: _page);
@@ -60,6 +61,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
       if (rawItems is! List) throw const FormatException('items 필드가 올바르지 않습니다.');
       final items = rawItems.whereType<Map<String, dynamic>>().toList();
       final pageSize = (data['size'] as num?)?.toInt() ?? 20;
+      debugPrint('[FEED] _loadPosts success items=${items.length}');
 
       setState(() {
         _posts.addAll(items);
@@ -67,9 +69,11 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
         _hasMore = items.length >= pageSize;
       });
     } catch (e) {
+      debugPrint('[FEED] _loadPosts error: $e');
       setState(() => _error = '게시글을 불러올 수 없습니다.');
     } finally {
       if (mounted) setState(() => _loading = false);
+      debugPrint('[FEED] _loadPosts finally, loading=false');
     }
   }
 

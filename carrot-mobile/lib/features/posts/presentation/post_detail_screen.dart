@@ -50,9 +50,11 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
 
   Future<void> _loadPost() async {
     try {
+      debugPrint('[DETAIL] _loadPost start id=${widget.postId}');
       final client = ref.read(apiClientProvider);
       final repo = PostsRepository(client);
       final post = await repo.getPost(widget.postId);
+      debugPrint('[DETAIL] _loadPost success title=${post['title']}');
       if (!mounted) return;
       setState(() {
         _post = post;
@@ -62,6 +64,7 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
       });
       _checkOwner(post['seller_email'] as String? ?? '');
     } catch (e) {
+      debugPrint('[DETAIL] _loadPost error: $e');
       if (!mounted) return;
       setState(() {
         _error = '게시글을 불러올 수 없습니다.';
@@ -373,8 +376,10 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
           ),
 
           // 하단 고정 버튼
-          Container(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+          SafeArea(
+            top: false,
+            child: Container(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
             decoration: BoxDecoration(
               color: Colors.white,
               border: Border(top: BorderSide(color: Colors.grey.shade200)),
@@ -455,6 +460,7 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
                       ),
                     ),
                   ]),
+            ),
           ),
         ],
       ),

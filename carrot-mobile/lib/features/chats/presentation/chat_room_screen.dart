@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/providers/api_client_provider.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../features/posts/data/posts_repository.dart';
+import '../../../shared/widgets/status_badge.dart';
 import '../data/chats_repository.dart';
 
 class _OptimisticMessage {
@@ -49,6 +51,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
   int? _lastMessageId;
   bool _sending = false;
   Timer? _pollTimer;
+  Map<String, dynamic>? _post;
 
   String get _opponentEmail =>
       widget.myEmail == widget.sellerEmail ? widget.buyerEmail : widget.sellerEmail;
@@ -56,6 +59,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
   @override
   void initState() {
     super.initState();
+    _loadPost();
     _loadMessages();
     _markAsRead();
     _pollTimer = Timer.periodic(
@@ -70,6 +74,15 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
     _controller.dispose();
     _scrollController.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadPost() async {
+    try {
+      final client = ref.read(apiClientProvider);
+      final repo = PostsRepository(client);
+      final post = await repo.getPost(widget.postId);
+      if (mounted) setState(() => _post = post);
+    } catch (_) {}
   }
 
   Future<void> _markAsRead() async {
@@ -159,6 +172,71 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
     });
   }
 
+  Widget _buildPostBanner(Map<String, dynamic> post) {
+    final thumbnail = post['thumbnail'] as String?;
+    final title = post['title'] as String? ?? '';
+    final price = post['price'] as int?;
+    final isFree = post['is_free'] as bool? ?? false;
+    final status = post['status'] as String? ?? '판매중';
+    final priceText = isFree
+        ? '나눔'
+        : price != null
+            ? '${price.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m.group(1)},')}원'
+            : '가격 미정';
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border(bottom: BorderSide(color: Colors.grey.shade200)),
+      ),
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: thumbnail != null
+                ? Image.network(
+                    thumbnail,
+                    width: 48,
+                    height: 48,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => _thumbPlaceholder(),
+                  )
+                : _thumbPlaceholder(),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  priceText,
+                  style: const TextStyle(fontSize: 13, color: Colors.black87),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          StatusBadge(status: status),
+        ],
+      ),
+    );
+  }
+
+  Widget _thumbPlaceholder() => Container(
+        width: 48,
+        height: 48,
+        color: const Color(0xFFE5E7EB),
+        child: const Icon(Icons.image_outlined, color: Colors.white54, size: 22),
+      );
+
   Widget _buildBubble(
     String message,
     bool isMine, {
@@ -226,6 +304,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
       ),
       body: Column(
         children: [
+          if (_post != null) _buildPostBanner(_post!),
           Expanded(
             child: ListView(
               controller: _scrollController,

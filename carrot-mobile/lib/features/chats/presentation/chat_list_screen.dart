@@ -44,12 +44,15 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
 
   Future<void> _loadRooms() async {
     try {
+      debugPrint('[CHAT] _loadRooms start');
       final client = ref.read(apiClientProvider);
       final repo = ChatsRepository(client);
       final result = await repo.getChatRooms();
+      debugPrint('[CHAT] _loadRooms success rooms=${result.length}');
       if (!mounted) return;
       setState(() { _rooms = result; _loading = false; });
     } catch (e) {
+      debugPrint('[CHAT] _loadRooms error: $e');
       if (!mounted) return;
       setState(() { _error = '채팅 목록을 불러올 수 없습니다.'; _loading = false; });
     }
