@@ -3,9 +3,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import Image from 'next/image'
+import Link from 'next/link'
 import { chatsApi, MessageResponse } from '@/lib/api/chats'
 import { postsApi } from '@/lib/api/posts'
 import { usersApi } from '@/lib/api/users'
+import { StatusBadge } from '@/components/common/StatusBadge'
 import { TradeCompleteSheet } from '@/components/posts/TradeCompleteSheet'
 
 interface OptimisticMessage {
@@ -174,6 +177,26 @@ export default function ChatRoomPage() {
           <p className="font-semibold text-sm">{opponentEmail || '채팅'}</p>
         </div>
       </header>
+
+      {/* 게시글 썸네일 + 제목 */}
+      {post && (
+        <Link href={`/posts/${postId}`} className="flex items-center gap-3 px-4 py-3 border-b bg-gray-50 hover:bg-gray-100 transition-colors">
+          <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-gray-200 shrink-0">
+            {post.photos?.[0] ? (
+              <Image src={post.photos[0]} alt="" fill className="object-cover" sizes="48px" />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-gray-300 text-xl">🖼️</div>
+            )}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-gray-900 truncate">{post.title}</p>
+            <p className="text-xs text-gray-500 mt-0.5">
+              {post.is_free ? '나눔' : post.price != null ? `${post.price.toLocaleString()}원` : '가격 미정'}
+            </p>
+          </div>
+          <StatusBadge status={post.status} />
+        </Link>
+      )}
 
       {/* 판매자 전용 상태 변경 바 */}
       {isSeller && post && post.status !== '거래완료' && (
