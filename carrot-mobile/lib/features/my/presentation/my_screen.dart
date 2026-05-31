@@ -8,6 +8,7 @@ import '../../../features/posts/data/posts_repository.dart';
 import '../../../features/posts/presentation/post_detail_screen.dart';
 import '../../../shared/widgets/manner_temp_widget.dart';
 import '../../../shared/widgets/post_card.dart';
+import '../../../shared/widgets/shimmer_box.dart';
 import '../data/my_repository.dart';
 
 final myProfileProvider = FutureProvider.autoDispose<Map<String, dynamic>>((ref) async {
@@ -58,7 +59,55 @@ class _MyScreenState extends ConsumerState<MyScreen> {
           onStatusFilterChanged: (s) => setState(() => _selectedStatus = s),
           onLogout: () => _logout(context),
         ),
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  children: [
+                    Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                      ShimmerBox(width: 80, height: 14),
+                      ShimmerBox(width: 70, height: 20),
+                    ]),
+                    const SizedBox(height: 16),
+                    const Divider(),
+                    const SizedBox(height: 12),
+                    ...List.generate(3, (_) => Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        ShimmerBox(width: 40, height: 11),
+                        const SizedBox(height: 4),
+                        ShimmerBox(width: 180, height: 16),
+                      ]),
+                    )),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+              ShimmerBox(width: 80, height: 18),
+              const SizedBox(height: 12),
+              ...List.generate(3, (_) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Row(children: [
+                  const ShimmerBox(width: 100, height: 100, borderRadius: 12),
+                  const SizedBox(width: 12),
+                  Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    const ShimmerBox(height: 15),
+                    const SizedBox(height: 6),
+                    ShimmerBox(width: 80, height: 14),
+                  ])),
+                ]),
+              )),
+            ],
+          ),
+        ),
         error: (e, _) => Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

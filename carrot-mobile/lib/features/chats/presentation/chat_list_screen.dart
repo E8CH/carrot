@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/api/api_endpoints.dart';
 import '../../../core/providers/api_client_provider.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../shared/widgets/shimmer_box.dart';
 import '../data/chats_repository.dart';
 import 'chat_room_screen.dart';
 
@@ -86,7 +87,33 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
   }
 
   Widget _buildBody() {
-    if (_loading) return const Center(child: CircularProgressIndicator());
+    if (_loading) return ListView.separated(
+      itemCount: 5,
+      separatorBuilder: (_, __) => const Divider(height: 1),
+      itemBuilder: (_, __) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            const ShimmerBox(width: 48, height: 48, borderRadius: 8),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(children: [
+                    Expanded(child: ShimmerBox(height: 14)),
+                    const SizedBox(width: 40),
+                    ShimmerBox(width: 36, height: 11),
+                  ]),
+                  const SizedBox(height: 6),
+                  ShimmerBox(width: 160, height: 12),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
     if (_error != null) {
       return Center(child: Text(_error!, style: const TextStyle(color: Colors.red)));
     }

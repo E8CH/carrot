@@ -25,12 +25,6 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
 
   int _feedRefreshKey = 0;
 
-  List<Widget> get _pages => [
-    FeedScreen(key: ValueKey(_feedRefreshKey)),
-    ChatListScreen(),
-    MyScreen(),
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -60,7 +54,14 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _pages[_selectedIndex],
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: [
+          FeedScreen(key: ValueKey(_feedRefreshKey)),
+          const ChatListScreen(),
+          const MyScreen(),
+        ],
+      ),
       floatingActionButton: _selectedIndex == 0
           ? FloatingActionButton(
               onPressed: () => Navigator.of(context).push(
