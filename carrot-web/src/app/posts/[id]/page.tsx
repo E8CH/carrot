@@ -17,8 +17,12 @@ import { SiteHeader } from '@/components/layout/SiteHeader'
 
 function ImageSlider({ photos }: { photos: string[] }) {
   const [idx, setIdx] = useState(0)
+  const [loaded, setLoaded] = useState<boolean[]>(() => new Array(photos.length).fill(false))
   const startX = useRef(0)
   const isDragging = useRef(false)
+
+  const markLoaded = (i: number) =>
+    setLoaded(prev => { const next = [...prev]; next[i] = true; return next })
 
   const prev = () => setIdx((i) => Math.max(0, i - 1))
   const next = () => setIdx((i) => Math.min(photos.length - 1, i + 1))
@@ -55,18 +59,22 @@ function ImageSlider({ photos }: { photos: string[] }) {
         {photos.map((url, i) => (
           <div
             key={i}
-            className="relative flex-shrink-0 h-full bg-gray-100"
+            className="relative flex-shrink-0 h-full bg-gray-200"
             style={{ width: `${100 / photos.length}%` }}
           >
             <Image
               src={url}
               alt={`사진 ${i + 1}`}
               fill
-              className="object-cover"
+              className={`object-cover transition-opacity duration-300 ${loaded[i] ? 'opacity-100' : 'opacity-0'}`}
               priority={i <= 1}
               loading={i <= 1 ? 'eager' : 'lazy'}
               sizes="(max-width: 672px) 100vw, 672px"
+              onLoad={() => markLoaded(i)}
             />
+            {!loaded[i] && (
+              <div className="absolute inset-0 bg-gray-200 animate-pulse" />
+            )}
           </div>
         ))}
       </div>
