@@ -83,10 +83,12 @@ export default function MyPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 px-4 py-8 max-w-lg mx-auto">
-      <h1 className="text-2xl font-bold mb-6" style={{ color: '#FF7E36' }}>
-        나의 당근
-      </h1>
+    <div className="min-h-screen bg-gray-50 max-w-lg mx-auto">
+      <header className="sticky top-0 z-10 bg-white border-b px-4 py-3 flex items-center gap-3">
+        <Link href="/" className="text-gray-500 text-sm">← 홈</Link>
+        <h1 className="font-bold text-lg" style={{ color: '#FF7E36' }}>나의 당근</h1>
+      </header>
+      <div className="px-4 py-8">
 
       {/* 프로필 카드 */}
       <div className="bg-white rounded-xl p-6 shadow-sm space-y-4">
@@ -244,15 +246,13 @@ export default function MyPage() {
       </div>
 
       <div className="mt-6 space-y-2">
-        <Link href="/" className="block text-center py-3 text-sm text-gray-500 hover:text-gray-700">
-          홈으로 돌아가기
-        </Link>
         <button
           onClick={handleLogout}
           className="w-full py-3 text-sm text-red-500 border border-red-200 rounded-xl hover:bg-red-50 transition-colors"
         >
           로그아웃
         </button>
+      </div>
       </div>
     </div>
   )
