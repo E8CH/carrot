@@ -385,47 +385,58 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
               border: Border(top: BorderSide(color: Colors.grey.shade200)),
             ),
             child: _isOwner
-                ? Row(children: [
-                    if (status != '거래완료') ...[
-                      OutlinedButton(
-                        onPressed: _showTradeCompleteSheet,
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: const Color(0xFFFF7E36),
-                          side: const BorderSide(color: Color(0xFFFF7E36)),
-                        ),
-                        child: const Text('거래완료'),
-                      ),
-                      const SizedBox(width: 8),
-                      OutlinedButton(
-                        onPressed: _statusLoading
-                            ? null
-                            : () => _changeStatus(status == '판매중' ? '예약중' : '판매중'),
-                        child: Text(status == '판매중' ? '예약중' : '판매중'),
-                      ),
-                      const SizedBox(width: 8),
-                    ],
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => PostEditScreen(postId: widget.postId),
+                ? Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (status != '거래완료') ...[
+                        Row(children: [
+                          Expanded(
+                            child: OutlinedButton(
+                              onPressed: _showTradeCompleteSheet,
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: const Color(0xFFFF7E36),
+                                side: const BorderSide(color: Color(0xFFFF7E36)),
+                              ),
+                              child: const Text('거래완료'),
+                            ),
                           ),
-                        ).then((_) => _loadPost()),
-                        child: const Text('수정'),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: () => _confirmDelete(context),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.red,
-                          side: const BorderSide(color: Colors.red),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: OutlinedButton(
+                              onPressed: _statusLoading
+                                  ? null
+                                  : () => _changeStatus(status == '판매중' ? '예약중' : '판매중'),
+                              child: Text(status == '판매중' ? '예약중으로' : '판매중으로'),
+                            ),
+                          ),
+                        ]),
+                        const SizedBox(height: 8),
+                      ],
+                      Row(children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => PostEditScreen(postId: widget.postId),
+                              ),
+                            ).then((_) => _loadPost()),
+                            child: const Text('수정'),
+                          ),
                         ),
-                        child: const Text('삭제'),
-                      ),
-                    ),
-                  ])
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () => _confirmDelete(context),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: Colors.red,
+                              side: const BorderSide(color: Colors.red),
+                            ),
+                            child: const Text('삭제'),
+                          ),
+                        ),
+                      ]),
+                    ],
+                  )
                 : Row(children: [
                     OutlinedButton(
                       onPressed: _toggleLike,

@@ -173,7 +173,8 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
   }
 
   Widget _buildPostBanner(Map<String, dynamic> post) {
-    final thumbnail = post['thumbnail'] as String?;
+    final photos = (post['photos'] as List?)?.cast<String>() ?? [];
+    final thumbnail = post['thumbnail'] as String? ?? (photos.isNotEmpty ? photos[0] : null);
     final title = post['title'] as String? ?? '';
     final price = post['price'] as int?;
     final isFree = post['is_free'] as bool? ?? false;
