@@ -120,7 +120,8 @@ class _PostEditScreenState extends ConsumerState<PostEditScreen> {
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception('이미지 업로드 실패 (${response.statusCode})');
     }
-    return '${ApiEndpoints.supabaseUrl}/storage/v1/object/public/posts/$filePath';
+    final supabaseBase = Uri.parse(uploadUrl).origin;
+    return '$supabaseBase/storage/v1/object/public/posts/$filePath';
   }
 
   Future<void> _submit() async {

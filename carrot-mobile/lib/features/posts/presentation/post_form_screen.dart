@@ -169,7 +169,9 @@ class _PostFormScreenState extends ConsumerState<PostFormScreen> {
       throw Exception('이미지 업로드 실패 (${response.statusCode})');
     }
 
-    return '${ApiEndpoints.supabaseUrl}/storage/v1/object/public/posts/$filePath';
+    // signed URL에서 Supabase base URL 추출 → dart-define 미설정 시 broken URL 방지
+    final supabaseBase = Uri.parse(uploadUrl).origin;
+    return '$supabaseBase/storage/v1/object/public/posts/$filePath';
   }
 
   Future<void> _submit() async {
