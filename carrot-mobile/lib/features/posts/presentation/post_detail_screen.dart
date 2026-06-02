@@ -95,7 +95,7 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
       final client = ref.read(apiClientProvider);
       final repo = PostsRepository(client);
       await repo.deletePost(widget.postId);
-      nav.popUntil((route) => route.isFirst);
+      nav.pop();
     } catch (_) {
       messenger.showSnackBar(const SnackBar(content: Text('삭제에 실패했습니다.')));
     }

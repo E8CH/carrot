@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { useQuery } from '@tanstack/react-query'
@@ -17,6 +18,23 @@ function formatElapsed(isoString: string): string {
   return `${Math.floor(hours / 24)}일 전`
 }
 
+function ChatThumbnail({ src }: { src: string }) {
+  const [loaded, setLoaded] = useState(false)
+  return (
+    <>
+      <Image
+        src={src}
+        alt=""
+        fill
+        className={`object-cover transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+        sizes="48px"
+        onLoad={() => setLoaded(true)}
+      />
+      {!loaded && <div className="absolute inset-0 bg-gray-200 animate-pulse" />}
+    </>
+  )
+}
+
 function ChatListTile({
   room,
   onClick,
@@ -32,13 +50,7 @@ function ChatListTile({
       {/* 게시글 썸네일 */}
       <div className="w-12 h-12 rounded-lg bg-gray-100 shrink-0 overflow-hidden relative">
         {room.post_thumbnail ? (
-          <Image
-            src={room.post_thumbnail}
-            alt=""
-            fill
-            className="object-cover"
-            sizes="48px"
-          />
+          <ChatThumbnail src={room.post_thumbnail} />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-gray-300 text-xl">🖼️</div>
         )}

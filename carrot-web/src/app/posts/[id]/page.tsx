@@ -198,6 +198,7 @@ export default function PostDetailPage() {
     setDeleteError('')
     try {
       await postsApi.deletePost(postId)
+      queryClient.invalidateQueries({ queryKey: ['posts'] })
       router.push('/')
     } catch {
       setShowDeleteDialog(false)

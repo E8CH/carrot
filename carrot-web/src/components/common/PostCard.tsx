@@ -1,3 +1,6 @@
+'use client'
+
+import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { StatusBadge } from './StatusBadge'
@@ -24,6 +27,23 @@ interface PostCardProps {
   created_at: string
 }
 
+function ThumbnailImage({ src, alt }: { src: string; alt: string }) {
+  const [loaded, setLoaded] = useState(false)
+  return (
+    <>
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        className={`object-cover transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+        sizes="100px"
+        onLoad={() => setLoaded(true)}
+      />
+      {!loaded && <div className="absolute inset-0 bg-gray-200 animate-pulse" />}
+    </>
+  )
+}
+
 export function PostCard({
   id,
   title,
@@ -42,13 +62,7 @@ export function PostCard({
       {/* 썸네일 100×100 */}
       <div className="relative flex-shrink-0 w-[100px] h-[100px] rounded-xl overflow-hidden bg-gray-100">
         {thumbnail ? (
-          <Image
-            src={thumbnail}
-            alt={title}
-            fill
-            className="object-cover"
-            sizes="100px"
-          />
+          <ThumbnailImage src={thumbnail} alt={title} />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-gray-300 text-3xl">🖼️</div>
         )}

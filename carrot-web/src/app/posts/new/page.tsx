@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useQueryClient } from '@tanstack/react-query'
 import Image from 'next/image'
 import { postsApi, type DraftResponse } from '@/lib/api/posts'
 import { Button } from '@/components/ui/button'
@@ -14,6 +15,7 @@ const MAX_PHOTOS = 10
 
 export default function NewPostPage() {
   const router = useRouter()
+  const queryClient = useQueryClient()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const previewsRef = useRef<string[]>([])
 
@@ -157,6 +159,7 @@ export default function NewPostPage() {
         photos: photoUrls,
       })
 
+      queryClient.invalidateQueries({ queryKey: ['posts'] })
       showToast('등록됐어요!')
       router.push('/')
     } catch (err: unknown) {

@@ -126,11 +126,20 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
                   return PostCard(
                     post: _posts[index],
                     onTap: postId > 0
-                        ? () => Navigator.of(context).push(
-                              MaterialPageRoute(
+                        ? () => Navigator.of(context)
+                              .push(MaterialPageRoute(
                                 builder: (_) => PostDetailScreen(postId: postId),
-                              ),
-                            )
+                              ))
+                              .then((_) {
+                                if (mounted) {
+                                  setState(() {
+                                    _posts.clear();
+                                    _page = 1;
+                                    _hasMore = true;
+                                  });
+                                  _loadPosts();
+                                }
+                              })
                         : null,
                   );
                 },
