@@ -33,4 +33,4 @@ app.include_router(api_router, prefix="/api/v1")
 
 @app.get("/health", tags=["health"])
 async def health_check():
-    return {"status": "ok"}
+    return {"status": "ok", "version": "rag-v1"}
