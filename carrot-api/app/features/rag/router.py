@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.features.rag.schemas import ChatRequest, ChatResponse, IndexDocsResponse, SourceItem
+from app.features.rag.schemas import ChatRequest, ChatResponse, IndexDocsResponse, IndexPostsResponse, SourceItem
 from app.features.rag.service import rag_service
 
 router = APIRouter()
@@ -31,3 +31,11 @@ async def index_docs(
 ) -> IndexDocsResponse:
     count = await rag_service.index_docs(db)
     return IndexDocsResponse(indexed=count)
+
+
+@router.post("/index-posts", response_model=IndexPostsResponse)
+async def index_posts(
+    db: AsyncSession = Depends(get_db),
+) -> IndexPostsResponse:
+    count = await rag_service.index_all_posts(db)
+    return IndexPostsResponse(indexed=count)

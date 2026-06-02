@@ -115,6 +115,32 @@ class RagService:
             if len(s.strip()) >= 50
         ]
 
+    async def index_all_posts(self, db: AsyncSession) -> int:
+        from sqlalchemy import select
+        from app.features.posts.models import Post
+
+        rows = (await db.execute(
+            select(Post).where(Post.is_draft == False)  # noqa: E712
+        )).scalars().all()
+
+        await db.execute(text("DELETE FROM embeddings WHERE source_type = 'post'"))
+        await db.commit()
+
+        for post in rows:
+            content = f"제목: {post.title}\n\n설명: {post.description}"
+            if post.trade_place:
+                content += f"\n\n거래 희망 장소: {post.trade_place}"
+            vec = await self._embed(content)
+            await db.execute(
+                text("""
+                    INSERT INTO embeddings (source_type, source_id, content, embedding)
+                    VALUES ('post', :sid, :content, CAST(:vec AS vector))
+                """),
+                {"sid": str(post.id), "content": content, "vec": self._vec_str(vec)},
+            )
+        await db.commit()
+        return len(rows)
+
     async def index_docs(self, db: AsyncSession) -> int:
         if not _DOCS_DIR.exists():
             return 0

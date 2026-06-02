@@ -18,3 +18,6 @@ class ChatResponse(BaseModel):
 
 class IndexDocsResponse(BaseModel):
     indexed: int
+
+class IndexPostsResponse(BaseModel):
+    indexed: int
