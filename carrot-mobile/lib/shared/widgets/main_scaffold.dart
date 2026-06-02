@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/providers/api_client_provider.dart';
 import '../../core/theme/app_colors.dart';
+import '../../features/chatbot/presentation/chatbot_screen.dart';
 import '../../features/chats/data/chats_repository.dart';
 import '../../features/chats/presentation/chat_list_screen.dart';
 import '../../features/my/presentation/my_screen.dart';
@@ -62,15 +63,32 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
           const MyScreen(),
         ],
       ),
-      floatingActionButton: _selectedIndex == 0
-          ? FloatingActionButton(
-              onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const PostFormScreen()),
-              ).then((_) => setState(() => _feedRefreshKey++)),
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          if (_selectedIndex == 0) ...[
+            FloatingActionButton(
+              heroTag: 'write',
+              onPressed: () => Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (_) => const PostFormScreen()))
+                  .then((_) => setState(() => _feedRefreshKey++)),
               backgroundColor: AppColors.primary,
               child: const Icon(Icons.add, color: Colors.white),
-            )
-          : null,
+            ),
+            const SizedBox(height: 10),
+          ],
+          FloatingActionButton.small(
+            heroTag: 'chatbot',
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const ChatBotScreen()),
+            ),
+            backgroundColor: Colors.white,
+            elevation: 2,
+            child: const Icon(Icons.support_agent, color: AppColors.primary),
+          ),
+        ],
+      ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _selectedIndex,
         onDestinationSelected: (i) => setState(() => _selectedIndex = i),

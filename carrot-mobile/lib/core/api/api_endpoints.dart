@@ -39,4 +39,6 @@ class ApiEndpoints {
   static const usersMeLikes = '/api/v1/users/me/likes';
 
   static const reviews = '/api/v1/reviews/';
+
+  static const ragChat = '/api/v1/rag/chat';
 }

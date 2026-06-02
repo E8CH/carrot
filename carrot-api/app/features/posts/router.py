@@ -1,11 +1,11 @@
 import uuid
 
-from fastapi import APIRouter, Depends, Path, Query
+from fastapi import APIRouter, BackgroundTasks, Depends, Path, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from supabase import create_client
 
 from app.core.config import settings
-from app.core.database import get_db
+from app.core.database import AsyncSessionLocal, get_db
 from app.core.dependencies import get_current_user, get_optional_user
 from app.features.posts import service
 from app.features.posts.schemas import (
@@ -21,9 +21,27 @@ from app.features.posts.schemas import (
     UpdatePostRequest,
     UploadUrlResponse,
 )
+from app.features.rag.service import rag_service
 from app.shared.exceptions import AppException
 
 router = APIRouter()
+
+
+async def _bg_index_post(post_id: int, title: str, description: str, trade_place: str | None) -> None:
+    async with AsyncSessionLocal() as db:
+        try:
+            await rag_service.index_post(db, post_id, title, description, trade_place)
+        except Exception:
+            pass
+
+
+async def _bg_delete_post_embedding(post_id: int) -> None:
+    async with AsyncSessionLocal() as db:
+        try:
+            await rag_service.delete_post_embedding(db, post_id)
+        except Exception:
+            pass
+
 
 # Supabase 클라이언트 (모듈 로드 시 1회 생성)
 _supabase = create_client(settings.SUPABASE_URL, settings.SUPABASE_KEY)
@@ -158,6 +176,7 @@ async def complete_post(
 @router.patch("/{post_id}", response_model=PostDetailResponse)
 async def patch_post(
     request: UpdatePostRequest,
+    background_tasks: BackgroundTasks,
     post_id: int = Path(ge=1),
     current_user: dict = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
@@ -165,11 +184,16 @@ async def patch_post(
     seller_email = current_user.get("sub")
     if not seller_email:
         raise AppException(code="UNAUTHORIZED", detail="유효하지 않은 토큰입니다.", status_code=401)
-    return await service.update_post(db, seller_email, post_id, request)
+    result = await service.update_post(db, seller_email, post_id, request)
+    background_tasks.add_task(
+        _bg_index_post, result.id, result.title, result.description, result.trade_place
+    )
+    return result
 
 
 @router.delete("/{post_id}", status_code=204)
 async def delete_post(
+    background_tasks: BackgroundTasks,
     post_id: int = Path(ge=1),
     current_user: dict = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
@@ -191,17 +215,23 @@ async def delete_post(
                 _supabase.storage.from_(_BUCKET).remove(file_paths)
             except Exception:
                 pass  # orphan files 허용 (포트폴리오)
-    # 3. DB 삭제
+    # 3. DB 삭제 + 임베딩 삭제
     await service.delete_post_db(db, post_id)
+    background_tasks.add_task(_bg_delete_post_embedding, post_id)
 
 
 @router.post("/", response_model=PostDetailResponse, status_code=201)
 async def create_post(
     request: CreatePostRequest,
+    background_tasks: BackgroundTasks,
     current_user: dict = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> PostDetailResponse:
     seller_email = current_user.get("sub")
     if not seller_email:
         raise AppException(code="UNAUTHORIZED", detail="유효하지 않은 토큰입니다.", status_code=401)
-    return await service.create_post(db, seller_email, request)
+    result = await service.create_post(db, seller_email, request)
+    background_tasks.add_task(
+        _bg_index_post, result.id, result.title, result.description, result.trade_place
+    )
+    return result

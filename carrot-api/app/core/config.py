@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 43200  # 30일
     ALLOWED_ORIGINS: str = ""  # 쉼표 구분 추가 오리진 (Railway 배포 URL)
+    OPENAI_API_KEY: str = ""
 
 
 settings = Settings()
